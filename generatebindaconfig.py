@@ -7,7 +7,7 @@ if len(sys.argv) != 2:
 context = sys.argv[1] #erster Parameter
 
 import mysql.connector as ms
-import datetime.datetime as dt
+import datetime as dt
 from importlib.machinery import SourceFileLoader
 server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
 
@@ -24,7 +24,7 @@ def print_header(suffix):
 	print(";;")
 	print("$TTL 0")
 	print("@       IN      SOA     "+NS+". "+EMAIL.replace("@",".")+". (")
-	print("                        "+dt.now().strftime("%y%m%d%H%M")+"      ; Serial")
+	print("                        "+dt.datetime.now().strftime("%y%m%d%H%M")+"      ; Serial")
 	print("                        3h              ; Refresh after 3 hours")
 	print("                        1h              ; Retry after 1 hour")
 	print("                        1w              ; Expire after 1 week")
