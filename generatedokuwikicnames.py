@@ -1,7 +1,10 @@
 #!/usr/bin/python3
 #coding=utf-8
 import mysql.connector as ms
-import server_config
+from importlib.machinery import SourceFileLoader
+
+server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
+
 
 
 print("====== CNAMEs ======")

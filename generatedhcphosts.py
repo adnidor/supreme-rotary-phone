@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import mysql.connector as ms
-import server_config
+from importlib.machinery import SourceFileLoader
+
+server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
 
 print("#DO NOT EDIT - This file was generated automatically from an MySQL-Database") #must be first non-import line, waits for fifo to be opened
 

@@ -2,7 +2,10 @@
 #coding=utf-8
 import mysql.connector as ms
 import ipaddress as ipa
-import server_config
+from importlib.machinery import SourceFileLoader
+
+server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
+
 
 print("#DO NOT TOUCH - This file is generated automagically")
 

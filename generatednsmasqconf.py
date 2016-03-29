@@ -2,7 +2,10 @@
 import mysql.connector as ms
 import ipaddress as ipa
 import socket, struct
-import server_config
+from importlib.machinery import SourceFileLoader
+
+server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
+
 
 print("#DO NOT EDIT - This file was generated automatically from an MySQL-Database")
 
