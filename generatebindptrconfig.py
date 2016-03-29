@@ -18,13 +18,15 @@ network = ipa.ip_network(cur.fetchone()[0])
 
 
 DOMAIN=server_config.domain+"."
+EMAIL=server_config.email
+NS=server_config.nameserver
 
 def print_header(suffix):
 	print(";; "+suffix+" ("+context+")")
 	print(";;DO NOT EDIT - File automatically generated from MySQL-Database." )
 	print(";;")
 	print("$TTL 0")
-	print("@       IN      SOA     pi.yannik.intern.yannikenss.de. me.yannikenss.de. (")
+	print("@       IN      SOA     "+NS+". "+EMAIL.replace("@",".")+". (")
 	print("                        "+now.strftime("%y%m%d%H%M")+"    ; Serial")
 	print("                        3h              ; Refresh after 3 hours")
 	print("                        1h              ; Retry after 1 hour")

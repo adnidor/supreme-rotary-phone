@@ -9,14 +9,16 @@ now = datetime.datetime.now()
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-DOMAIN="intern.yannikenss.de."
+DOMAIN=server_config.domain+"."
+EMAIL=server_config.email
+NS=server_config.nameserver
 
 def print_header(suffix):
 	print(";; db."+suffix)
 	print(";;DO NOT EDIT - File automatically generated from MySQL-Database. Edit "+suffix+"manual instead" )
 	print(";;")
 	print("$TTL 0")
-	print("@       IN      SOA     pi.yannik.intern.yannikenss.de. me.yannikenss.de. (")
+	print("@       IN      SOA     "+NS+". "+EMAIL.replace("@",".")+". (")
 	print("                        "+now.strftime("%y%m%d%H%M")+"      ; Serial")
 	print("                        3h              ; Refresh after 3 hours")
 	print("                        1h              ; Retry after 1 hour")

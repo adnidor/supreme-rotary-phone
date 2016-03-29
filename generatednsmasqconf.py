@@ -4,7 +4,7 @@ import ipaddress as ipa
 import socket, struct
 import server_config
 
-print("#DO NOT EDIT - This file was generated automatically from an MySQL-Database") #must be first non-import line, waits for fifo to be opened
+print("#DO NOT EDIT - This file was generated automatically from an MySQL-Database")
 
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()

@@ -6,8 +6,6 @@ import server_config
 
 print("====== Geräte ======")
 print("DO NOT EDIT - This file is generated automatically")
-print()
-print("[[https://intern.yannikenss.de/adddevice_form.php|Gerät hinzufügen]]")
 
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
