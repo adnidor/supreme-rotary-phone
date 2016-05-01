@@ -22,6 +22,9 @@ for context in contexts:
     contextdhcp = context[1]
     contextrange = context[3]
     cur.execute("SELECT identifier, ip, description, hostname FROM devices WHERE context='"+contextname+"' AND type='dhcp' ORDER BY INET_ATON(ip)")
+    results = cur.fetchall()
+    if len(results) is 0 and contextdhcp is not 1:
+        continue
     print()
     print("#"+contextdesc)
     if contextdhcp is 1:
@@ -32,7 +35,8 @@ for context in contexts:
         last_host = socket.inet_ntoa(struct.pack("!L", struct.unpack("!L", socket.inet_aton(baddr))[0]-1))
     
         print("dhcp-range="+first_host+","+last_host+",12h")
-    for row in cur.fetchall():
+
+    for row in results:
         mac = row[0]
         ip = row[1]
         description = row[2]
