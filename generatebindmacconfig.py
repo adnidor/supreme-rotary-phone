@@ -29,13 +29,14 @@ def print_header(suffix):
 	print("@       IN      NS      ns.intern.yannikenss.de.")
 
 
-cur.execute("SELECT identifier, ip, hostname FROM devices WHERE type='dhcp' OR type='static'")
+cur.execute("SELECT identifier, ip, hostname, context FROM devices WHERE type='dhcp' OR type='static'")
 
 print_header("mac."+DOMAIN)
 for row in cur.fetchall():
 	mac = row[0]
 	ip = row[1]
 	hostname = row[2]
+	context = row[3]
 	print(mac.replace(":",".")+" IN A "+ip)
-	print(mac.replace(":",".")+" IN TXT \""+hostname+"\"")
+	print(mac.replace(":",".")+" IN TXT \""+hostname+"."+context+"."+DOMAIN+"\"")
 
