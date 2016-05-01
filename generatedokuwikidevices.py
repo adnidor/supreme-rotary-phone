@@ -20,7 +20,7 @@ contexts = cur.fetchall()
 for context in contexts:
     contextname = context[0]
     contextdesc = context[1]
-    cur.execute("SELECT identifier, ip, description, hostname, altname, type, devicetype FROM devices WHERE context='"+contextname+"' ORDER BY INET_ATON(ip)")
+    cur.execute("SELECT identifier, ip, description, hostname, altname, type, devicetypes.name FROM devices JOIN devicetypes ON devicetypes.number=devices.devicetype WHERE context='"+contextname+"' ORDER BY INET_ATON(ip)")
     results = cur.fetchall()
     print("====="+contextdesc+"=====")
     if len(results) is 0:
