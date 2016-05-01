@@ -20,10 +20,13 @@ contexts = cur.fetchall()
 for context in contexts:
     contextname  = context[0]
     contextdesc  = context[1]
+    cur.execute("SELECT name,target FROM cnames WHERE context='"+contextname+"'")
+    results = cur.fetchall()
+    if len(results) is 0:
+        continue
     print("===== "+contextdesc+" =====")
     print("^Name ^Ziel ^")
-    cur.execute("SELECT name,target FROM cnames WHERE context='"+contextname+"'")
-    for cname in cur.fetchall():
+    for cname in results:
         name = cname[0]
         target = cname[1]
         print("|"+name+"|"+target+"|")
