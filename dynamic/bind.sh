@@ -1,5 +1,5 @@
 #!/bin/bash
-basepath="$(dirname "$(readlink -f "$0")")"
+basepath="$(dirname "$(dirname "$(readlink -f "$0")")")"
 "$basepath/generatenamedconflocal.py" > /etc/bind/internaldomain.conf
 for context in $("$basepath/listcontexts.py")
 do
