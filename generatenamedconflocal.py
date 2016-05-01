@@ -25,15 +25,19 @@ for context in contexts:
         contextstring = contextstr+"."
     network = ipa.ip_network(context[1])
     reverse_record = ".".join((".".join(str(network.network_address).split(".")[::-1])+'.in-addr.arpa').split(".")[1:]) #dark magic - do not touch
+    print()
     print("zone \""+contextstring+DOMAIN+"\" {")
     print("type master;")
     print("file \"/etc/bind/db."+contextstr+".forward\";")
     print("};")
+    print()
     print("zone \""+reverse_record+"\" {")
     print("type master;")
     print("file \"/etc/bind/db."+contextstr+".reverse\";")
     print("};")
+    print()
 
+print()
 print("zone \"mac."+DOMAIN+"\" {")
 print("type master;")
 print("file \"/etc/bind/db.mac\";")
