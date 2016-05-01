@@ -23,7 +23,7 @@ for context in contexts:
     cur.execute("SELECT identifier, ip, description, hostname, altname, type FROM devices WHERE context='"+contextname+"' ORDER BY INET_ATON(ip)")
     results = cur.fetchall()
     print("====="+contextdesc+"=====")
-    if results.length is 0:
+    if len(results) is 0:
         print("No devices in this context.")
         continue
     print("^Identifier ^IP ^Name ^Hostname ^Altname ^Typ ^")
