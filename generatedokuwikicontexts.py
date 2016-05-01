@@ -19,10 +19,10 @@ cur.execute("SELECT name,description,iprange,dhcp FROM contexts")
 contexts = cur.fetchall()
 
 for context in contexts:
-	contextname  = context[0]
-	contextdesc  = context[1]
-	contextrange = context[2]
-	contextdhcp = "Ja" if (context[3] == 1) else "Nein"
-	print("|"+contextname+"|"+contextrange+"|"+contextdesc+"|[[network:devices_generated#"+contextdesc.lower()+"|Geräte]]|"+contextdhcp+"|")
+    contextname  = context[0]
+    contextdesc  = context[1]
+    contextrange = context[2]
+    contextdhcp = "Ja" if (context[3] == 1) else "Nein"
+    print("|"+contextname+"|"+contextrange+"|"+contextdesc+"|[[network:devices_generated#"+contextdesc.lower()+"|Geräte]]|"+contextdhcp+"|")
 
 

@@ -18,14 +18,14 @@ cur.execute("SELECT name,description FROM contexts")
 contexts = cur.fetchall()
 
 for context in contexts:
-	contextname  = context[0]
-	contextdesc  = context[1]
-	print("===== "+contextdesc+" =====")
-	print("^Name ^Ziel ^")
-	cur.execute("SELECT name,target FROM cnames WHERE context='"+contextname+"'")
-	for cname in cur.fetchall():
-		name = cname[0]
-		target = cname[1]
-		print("|"+name+"|"+target+"|")
+    contextname  = context[0]
+    contextdesc  = context[1]
+    print("===== "+contextdesc+" =====")
+    print("^Name ^Ziel ^")
+    cur.execute("SELECT name,target FROM cnames WHERE context='"+contextname+"'")
+    for cname in cur.fetchall():
+        name = cname[0]
+        target = cname[1]
+        print("|"+name+"|"+target+"|")
 
 

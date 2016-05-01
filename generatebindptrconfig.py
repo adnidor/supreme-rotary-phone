@@ -25,27 +25,27 @@ EMAIL=server_config.email
 NS=server_config.nameserver
 
 def print_header(suffix):
-	print(";; "+suffix+" ("+context+")")
-	print(";;DO NOT EDIT - File automatically generated from MySQL-Database." )
-	print(";;")
-	print("$TTL 0")
-	print("@       IN      SOA     "+NS+". "+EMAIL.replace("@",".")+". (")
-	print("                        "+now.strftime("%y%m%d%H%M")+"    ; Serial")
-	print("                        3h              ; Refresh after 3 hours")
-	print("                        1h              ; Retry after 1 hour")
-	print("                        1w              ; Expire after 1 week")
-	print("                        1h )            ; Negative caching TTL of 1 day")
-	print("@       IN      NS      ns.intern.yannikenss.de.")
+    print(";; "+suffix+" ("+context+")")
+    print(";;DO NOT EDIT - File automatically generated from MySQL-Database." )
+    print(";;")
+    print("$TTL 0")
+    print("@       IN      SOA     "+NS+". "+EMAIL.replace("@",".")+". (")
+    print("                        "+now.strftime("%y%m%d%H%M")+"    ; Serial")
+    print("                        3h              ; Refresh after 3 hours")
+    print("                        1h              ; Retry after 1 hour")
+    print("                        1w              ; Expire after 1 week")
+    print("                        1h )            ; Negative caching TTL of 1 day")
+    print("@       IN      NS      ns.intern.yannikenss.de.")
 
 cur.execute("SELECT ip, hostname FROM devices WHERE context='"+context+"' ORDER BY INET_ATON(ip)")
 if context == "root":
-	prefix = ""
+    prefix = ""
 else:
-	prefix = context+"."
+    prefix = context+"."
 print_header(str(network))
 for row in cur.fetchall():
-	ip = ipa.ip_address(row[0])
-	last_digit = 0x000000ff & int(ip)
-	hostname = row[1]
-	fqhn = hostname+"."+prefix+DOMAIN
-	print(str(last_digit)+" IN PTR "+fqhn)
+    ip = ipa.ip_address(row[0])
+    last_digit = 0x000000ff & int(ip)
+    hostname = row[1]
+    fqhn = hostname+"."+prefix+DOMAIN
+    print(str(last_digit)+" IN PTR "+fqhn)

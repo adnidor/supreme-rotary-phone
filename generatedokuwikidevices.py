@@ -18,18 +18,22 @@ cur.execute("SELECT name, description FROM contexts")
 contexts = cur.fetchall()
 
 for context in contexts:
-	contextname = context[0]
-	contextdesc = context[1]
-	cur.execute("SELECT identifier, ip, description, hostname, altname, type FROM devices WHERE context='"+contextname+"' ORDER BY INET_ATON(ip)")
-	print("====="+contextdesc+"=====")
-	print("^Identifier ^IP ^Name ^Hostname ^Altname ^Typ ^")
-	for row in cur.fetchall():
-		mac = row[0]
-		ip = row[1]
-		description = row[2]
-		hostname = row[3]
-		altname = row[4] if row[4] else " "
-		type = row[5]
-		print("|"+mac+"|"+ip+"|"+description+"|"+hostname+"|"+altname+"|"+type+"|")
+    contextname = context[0]
+    contextdesc = context[1]
+    cur.execute("SELECT identifier, ip, description, hostname, altname, type FROM devices WHERE context='"+contextname+"' ORDER BY INET_ATON(ip)")
+    results = cur.fetchall()
+    print("====="+contextdesc+"=====")
+    if results.length is 0:
+        print("No devices in this context.")
+        continue
+    print("^Identifier ^IP ^Name ^Hostname ^Altname ^Typ ^")
+    for row in results:
+        mac = row[0]
+        ip = row[1]
+        description = row[2]
+        hostname = row[3]
+        altname = row[4] if row[4] else " "
+        type = row[5]
+        print("|"+mac+"|"+ip+"|"+description+"|"+hostname+"|"+altname+"|"+type+"|")
 
 

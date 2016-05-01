@@ -13,5 +13,5 @@ cur.execute("SELECT name FROM contexts")
 contexts = cur.fetchall()
 
 for context in contexts:
-	contextstr = context[0]
-	print(contextstr)
+    contextstr = context[0]
+    print(contextstr)

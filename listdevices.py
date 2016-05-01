@@ -15,10 +15,10 @@ cur.execute("SELECT hostname,context FROM devices")
 contexts = cur.fetchall()
 
 for context in contexts:
-	devicename = context[0]
-	context = context[1]
-	if context == "root":
-		contextstr = "."
-	else:
-		contextstr = "."+context+"."
-	print(devicename+contextstr+DOMAIN)
+    devicename = context[0]
+    context = context[1]
+    if context == "root":
+        contextstr = "."
+    else:
+        contextstr = "."+context+"."
+    print(devicename+contextstr+DOMAIN)
