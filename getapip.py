@@ -16,6 +16,6 @@ db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_
 cur = db.cursor()
 
 cur.execute("SELECT devices.ip FROM aps, devices WHERE aps.device = devices.identifier AND aps.name = '"+ap+"'")
-aps = cur.fetchall()[0][0]
+apip = cur.fetchall()[0][0]
 
 print(apip)
