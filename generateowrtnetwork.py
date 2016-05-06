@@ -18,12 +18,12 @@ print("#DO NOT EDIT - This file was generated automatically from an MySQL-Databa
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-cur.execute("SELECT id, vlans, mvlan, interface FROM aps WHERE name = '"+ap+"'")
+cur.execute("SELECT id, vlans, mvlan, interfaces FROM aps WHERE name = '"+ap+"'")
 result = cur.fetchall()[0]
 apid = result[0]
 vlans = result[1].split(",")
 mvlan = result[2]
-iface = result[3]
+ifaces = result[3].split(",")
 
 print("config interface 'loopback'")
 print("    option ifname 'lo'")
@@ -34,7 +34,11 @@ print()
 
 for vlan in vlans:
     print("config interface 'vlan"+vlan+"'")
-    print("    option ifname '"+iface+"."+vlan+"'")
+    ifname= "option ifname '"
+    for iface in ifaces:
+        ifname=ifname+iface+"."+vlan+" "
+    ifname=ifname.strip()+"'"
+    print("    "+ifname)
     print("    option type 'bridge'")
     if vlan == str(mvlan):
         print("    option proto 'dhcp'")
