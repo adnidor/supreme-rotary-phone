@@ -13,7 +13,7 @@ print("DO NOT EDIT - This file is generated automatically")
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-cur.execute("SELECT id, name FROM aps")
+cur.execute("SELECT id, name, channel FROM aps")
 
 aps = cur.fetchall()
 
@@ -23,7 +23,9 @@ wifis = cur.fetchall()
 for ap in aps:
     id = ap[0]
     name = ap[1]
+    channel = ap[2]
     print("====="+name+"=====")
+    print("Kanal: "+str(channel))
     print("^SSID ^VLAN ^Verschlüsselung ^Versteckt? ^Modus ^")
     for wifi in wifis:
         if str(id) not in wifi[0].split(","):
