@@ -3,8 +3,8 @@ basepath="$(dirname "$(dirname "$(readlink -f "$0")")")"
 mkdir -p "$basepath/tmp"
 for ap in $("$basepath/listaps.py")
 do
-	"$basepath/generateowrtwireless.py" "$ap" > "$basepath/tmp/$ap.wireless"
-	"$basepath/generateowrtnetwork.py" "$ap" > "$basepath/tmp/$ap.network"
+	"$basepath/generateconfig/generateowrtwireless.py" "$ap" > "$basepath/tmp/$ap.wireless"
+	"$basepath/generateconfig/generateowrtnetwork.py" "$ap" > "$basepath/tmp/$ap.network"
     ip="$("$basepath/getapip.py" "$ap")"
     scp -q "$basepath/tmp/$ap.wireless" root@$ip:/etc/config/wireless
     scp -q "$basepath/tmp/$ap.network" root@$ip:/etc/config/network
