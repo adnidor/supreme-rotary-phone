@@ -3,15 +3,15 @@ import mysql.connector as ms
 import ipaddress as ipa
 import socket, struct
 import sys
-from importlib.machinery import SourceFileLoader
+path = os.path.abspath(os.path.realpath(__file__)+"/../..")
+sys.path.append(path)
+sys.path.append("/etc/networkmanagement")
+import server_config
 
 if len(sys.argv) != 2:
     print("usage: "+sys.argv[0]+" <ap>")
     exit(1)
 ap = sys.argv[1] #erster Parameter
-
-server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
-
 
 print("#DO NOT EDIT - This file was generated automatically from an MySQL-Database")
 

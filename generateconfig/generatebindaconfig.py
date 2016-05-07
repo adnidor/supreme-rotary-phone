@@ -8,8 +8,11 @@ context = sys.argv[1] #erster Parameter
 
 import mysql.connector as ms
 import datetime as dt
-from importlib.machinery import SourceFileLoader
-server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
+import sys
+path = os.path.abspath(os.path.realpath(__file__)+"/../..")
+sys.path.append(path)
+sys.path.append("/etc/networkmanagement")
+import server_config
 
 DOMAIN=server_config.domain+"."
 EMAIL=server_config.email

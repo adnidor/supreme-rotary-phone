@@ -3,13 +3,12 @@ import mysql.connector as ms
 import sys
 import ipaddress as ipa
 import datetime
-
-from importlib.machinery import SourceFileLoader
-
-server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
+path = os.path.abspath(os.path.realpath(__file__)+"/../..")
+sys.path.append(path)
+sys.path.append("/etc/networkmanagement")
+import server_config
 
 now = datetime.datetime.now()
-
 
 context = sys.argv[1] #erster Parameter
 
