@@ -2,7 +2,7 @@
 import mysql.connector as ms
 import ipaddress as ipa
 import socket, struct
-import sys
+import sys,os
 path = os.path.abspath(os.path.realpath(__file__)+"/../..")
 sys.path.append(path)
 sys.path.append("/etc/networkmanagement")
