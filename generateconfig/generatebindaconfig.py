@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys
+import sys,os
 
 if len(sys.argv) != 2:
     print("usage: "+sys.argv[0]+" <context>")
@@ -8,7 +8,6 @@ context = sys.argv[1] #erster Parameter
 
 import mysql.connector as ms
 import datetime as dt
-import sys
 path = os.path.abspath(os.path.realpath(__file__)+"/../..")
 sys.path.append(path)
 sys.path.append("/etc/networkmanagement")

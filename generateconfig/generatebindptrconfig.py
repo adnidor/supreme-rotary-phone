@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import mysql.connector as ms
-import sys
+import sys,os
 import ipaddress as ipa
 import datetime
 path = os.path.abspath(os.path.realpath(__file__)+"/../..")
