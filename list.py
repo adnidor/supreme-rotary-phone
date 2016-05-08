@@ -18,7 +18,7 @@ target = sys.argv[1] #erster Parameter
 
 if target not in targets:
    print("invalid target")
-    exit(1)
+   exit(1)
 
 cur.execute("SELECT "+targets[target]["column"]+" FROM "+targets[target]["table"])
 results = cur.fetchall()
