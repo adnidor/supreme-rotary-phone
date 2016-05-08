@@ -17,7 +17,7 @@ cur.execute("SELECT id, name, channel FROM aps")
 
 aps = cur.fetchall()
 
-cur.execute("SELECT aps,ssid, authmethod, vlan, hidden, mode FROM wifis")
+cur.execute("SELECT aps,ssid, authmethod, vlans.name, hidden, mode FROM wifis LEFT JOIN vlans ON wifis.vlan = vlans.id")
 wifis = cur.fetchall()
 
 for ap in aps:
@@ -32,8 +32,8 @@ for ap in aps:
             continue
         ssid = wifi[1]
         encryption = wifi[2]
-        vlan = wifi[3] if wifi[3] > 0 else "-"
+        vlan = wifi[3] if wifi[3] is not None else "None"
         hidden = "Ja" if wifi[4] == 1 else "Nein"
         mode = wifi[5]
-        print("|"+ssid+"|"+str(vlan)+"|"+encryption+"|"+hidden+"|"+mode+"|")
+        print("|"+ssid+"|"+vlan+"|"+encryption+"|"+hidden+"|"+mode+"|")
 
