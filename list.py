@@ -2,6 +2,7 @@
 #coding=utf-8
 import mysql.connector as ms
 import sys
+import helpers
 from importlib.machinery import SourceFileLoader
 
 server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
@@ -9,7 +10,7 @@ server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-targets = {"aps":{"table":"aps", "column":"name", "convert":lambda x: x},"contexts":{"table":"contexts","column":"name", "convert":lambda x: x}}
+targets = {"aps":{"table":"aps", "column":"name", "convert":lambda x: x},"contexts":{"table":"contexts","column":"name", "convert":lambda x: x},"devices":{"table":"devices","column":"identifier","convert":lambda x: helpers.get_fqdn(x)}}
 
 if len(sys.argv) != 2:
     print("usage: "+sys.argv[0]+" <target>")
