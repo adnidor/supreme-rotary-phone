@@ -9,7 +9,7 @@ server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-targets = {"aps":{"table":"aps", "column":"name"},"contexts":{"table":"contexts","column":"name"}}
+targets = {"aps":{"table":"aps", "column":"name", "convert":lambda x: x},"contexts":{"table":"contexts","column":"name", "convert":lambda x: x}}
 
 if len(sys.argv) != 2:
     print("usage: "+sys.argv[0]+" <target>")
@@ -24,4 +24,4 @@ cur.execute("SELECT "+targets[target]["column"]+" FROM "+targets[target]["table"
 results = cur.fetchall()
 
 for result in results:
-    print(result[0])
+    print(targets[target]["convert"](result[0]))
