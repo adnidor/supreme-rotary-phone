@@ -18,7 +18,7 @@ submitted = cgi.FieldStorage()
 print("Content-type: text/html")
 print()
 
-if not ("context" in submitted and "identifier" in submitted and "description" in submitted and "hostname" in submitted and "devicetype" in submitted and "connection" in submitted):
+if not ("context" in submitted and "identifier" in submitted and "description" in submitted and "hostname" in submitted and "devicetype" in submitted and "connection" in submitted and "type" in submitted):
     print("Es fehlen Eingaben")
     exit(1)
 
@@ -28,6 +28,7 @@ description = submitted.getfirst("description")
 hostname = submitted.getfirst("hostname").lower()
 devicetype = submitted.getfirst("devicetype").lower()
 connection = submitted.getfirst("connection").lower()
+type = submitted.getfirst("type").lower()
 
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
@@ -39,21 +40,24 @@ ip = str(ipaddress.ip_address(cur.fetchone()[0])+1)
 print("Context: "+context)
 print("<br />")
 print("Id: "+identifier)
-print("<br />\n")
+print("<br />")
 print("IP: "+ip)
-print("<br />\n")
+print("<br />")
 print("Description: "+description)
-print("<br />\n")
+print("<br />")
 print("Hostname: "+hostname)
-print("<br />\n")
+print("<br />")
 print("Devicetype: "+devicetype)
-print("<br />\n")
+print("<br />")
 print("Connection: "+connection)
+print("<br />")
+print("Type: "+type)
+print("<br />")
 
 
-sql = "INSERT INTO devices (identifier, ip, hostname, description, context) VALUES ('$mac', '$ip', '$hostname', '$description', '$context')";
+sql = "INSERT INTO devices (identifier, ip, hostname, description, context, devicetype, connection, type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)";
 
-print(sql)
+print(sql % (identifier,ip,hostname,description,context,devicetype,connection,type))
 
 #exec("sudo /home/yannik/networkmanagement/update.sh");
 
