@@ -20,13 +20,13 @@ contexts = cur.fetchall()
 for context in contexts:
     contextname = context[0]
     contextdesc = context[1]
-    cur.execute("SELECT identifier, ip, description, hostname, altname, type, devicetypes.name FROM devices JOIN devicetypes ON devicetypes.number=devices.devicetype WHERE context='"+contextname+"' ORDER BY INET_ATON(ip)")
+    cur.execute("SELECT identifier, ip, description, hostname, altname, type, devicetypes.name,connection FROM devices JOIN devicetypes ON devicetypes.number=devices.devicetype WHERE context='"+contextname+"' ORDER BY INET_ATON(ip)")
     results = cur.fetchall()
     print("====="+contextdesc+"=====")
     if len(results) is 0:
         print("No devices in this context.")
         continue
-    print("^Identifier ^IP ^Name ^Hostname ^Altname ^Typ ^Gerätetyp ^")
+    print("^Identifier ^IP ^Name ^Hostname ^Altname ^Typ ^Gerätetyp ^Verbindungstyp ^")
     for row in results:
         mac = row[0]
         ip = row[1]
@@ -35,6 +35,7 @@ for context in contexts:
         altname = row[4] if row[4] else " "
         type = row[5]
         devicetype = row[6] if row[6] else " "
-        print("|"+mac+"|"+ip+"|"+description+"|"+hostname+"|"+altname+"|"+type+"|"+devicetype+"|")
+        connection = row[7]
+        print("|"+mac+"|"+ip+"|"+description+"|"+hostname+"|"+altname+"|"+type+"|"+devicetype+"|"+connection+"|")
 
 

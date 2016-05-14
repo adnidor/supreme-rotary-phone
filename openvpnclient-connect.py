@@ -26,7 +26,7 @@ syslog.syslog("CN: "+common_name)
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-cur.execute("SELECT ip FROM devices WHERE type='vpn' AND identifier=%s", (common_name,))
+cur.execute("SELECT ip FROM devices WHERE connection='openvpn' AND identifier=%s", (common_name,))
 results = cur.fetchall()
 if len(results) == 0:
     print("CN not found")
