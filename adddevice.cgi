@@ -59,5 +59,11 @@ sql = "INSERT INTO devices (identifier, ip, hostname, description, context, devi
 
 print(sql % (identifier,ip,hostname,description,context,devicetype,connection,type))
 
-#exec("sudo /home/yannik/networkmanagement/update.sh");
+try:
+    cur.execute(sql, (identifier,ip,hostname,description,context,devicetype,connection,type))
+    db.commit()
+except:
+    db.rollback()
+    print("Error")
 
+#exec("sudo /home/yannik/networkmanagement/update.sh");
