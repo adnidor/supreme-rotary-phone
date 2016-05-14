@@ -27,8 +27,8 @@ devicetypes = cur.fetchall()
 
 
 calling_ip = os.getenv('REMOTE_ADDR')
-#mac = subprocess.run(["/opt/get_mac_from_ip.sh", calling_ip], stdout=subprocess.PIPE).stdout.trim()
-mac = "aa:bb:cc:dd:ee:ff"
+mac = subprocess.run(["/opt/get_mac_from_ip.sh", calling_ip], stdout=subprocess.PIPE).stdout.trim()
+#mac = "aa:bb:cc:dd:ee:ff"
 
 print("Content-type: text/html")
 print()
