@@ -34,7 +34,7 @@ cur = db.cursor()
 
 sql = "SELECT ip from devices WHERE context = '"+context+"' ORDER BY INET_ATON(ip) DESC Limit 1";
 cur.execute(sql)
-ip = str(ipaddress.ip_address(cur.fetchone()[0]+1))
+ip = str(ipaddress.ip_address(cur.fetchone()[0])+1)
 
 print("Context: "+context)
 print("<br />")
