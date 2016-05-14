@@ -15,6 +15,13 @@ cgitb.enable()
 
 submitted = cgi.FieldStorage()
 
+print("Content-type: text/html")
+print()
+
+if not ("context" in submitted and "identifier" in submitted and "description" in submitted and "hostname" in submitted and "devicetype" in submitted and "connection" in submitted):
+    print("Es fehlen Eingaben")
+    exit(1)
+
 context = submitted.getfirst("context").lower()
 identifier = submitted.getfirst("identifier").lower()
 description = submitted.getfirst("description")
