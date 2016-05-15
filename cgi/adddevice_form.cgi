@@ -15,6 +15,8 @@ import cgitb
 import cgi
 cgitb.enable()
 
+print("Content-type: text/html")
+print()
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
@@ -52,8 +54,6 @@ calling_ip = os.getenv('REMOTE_ADDR')
 mac = subprocess.check_output(["/opt/get_mac_from_ip.sh", calling_ip], universal_newlines=True).strip()
 #mac = "aa:bb:cc:dd:ee:ff"
 
-print("Content-type: text/html")
-print()
 print("<html>")
 print("<head>")
 print("<title>Add device to network</title>")
