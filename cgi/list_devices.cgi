@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+#coding=utf-8
 import mysql.connector as ms
 import ipaddress as ipa
 import socket, struct
