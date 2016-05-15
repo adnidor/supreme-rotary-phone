@@ -14,7 +14,6 @@ import cgi
 import cgitb
 cgitb.enable()
 
-sys.setdefaultencoding('utf-8')
 
 print("Content-type: text/html; charset=UTF-8")
 print()
