@@ -68,7 +68,7 @@ print("<h1>Add device</h1>")
 print("<form action=adddevice.cgi method=POST>")
 print("Context: <select id='context' name='context'>")
 for cnxt in contexts:
-    if edit and cnxt == context:
+    if edit and cnxt[0] == context:
         print("<option value="+cnxt[0]+" selected>"+cnxt[2]+"</option>")
     else:
         print("<option value="+cnxt[0]+">"+cnxt[2]+"</option>")
@@ -85,7 +85,7 @@ print("Hostname: <input type=text name=hostname value='"+hostname+"'/>")
 print("<br />")
 print("Devicetype: <select name='devicetype'>")
 for devtype in devicetypes:
-    if edit and devtype == devicetype:
+    if edit and devtype[1] == devicetype:
         print("<option value="+str(devtype[1])+" selected>"+devtype[0]+"</option>")
     else:
         print("<option value="+str(devtype[1])+">"+devtype[0]+"</option>")
