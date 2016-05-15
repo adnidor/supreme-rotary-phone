@@ -65,7 +65,8 @@ print("</script>")
 print("</head>")
 print("<body>")
 print("<h1>Add device</h1>")
-print("<form action=adddevice.cgi method=POST>")
+action="adddevice.cgi" if not edit else "editdevice.cgi"
+print("<form action="+action+" method=POST>")
 print("Context: <select id='context' name='context'>")
 for cnxt in contexts:
     if edit and cnxt[0] == context:
