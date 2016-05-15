@@ -28,7 +28,7 @@ def get_link_details(device):
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-sql = "SELECT name,description FROM contexts"
+sql = "SELECT name,description,iprange FROM contexts"
 cur.execute(sql)
 contexts = cur.fetchall()
 
@@ -41,23 +41,30 @@ for context in contexts:
 print("<html><head>")
 print("<title>Geräte</title>")
 print("<style>")
-print("tr td {")
+print("th,td {")
 print("border: 1px solid;")
 print("}")
 print("table { border-collapse: collapse; }")
+print("tr:nth-child(even) {")
+print("background-color: grey;")
+print("}")
+print("tr:nth-child(odd) {")
+print("background-color: white;")
+print("}")
 print("</style>")
 print("</head><body>")
 print("<h1>Geräte</h1>")
 for context in contexts:
-    print("<h2>"+context[1]+"</h2>")
-    print("<table>")
-    print("<tr><th>Identifier</th><th>IP-Adresse</th><th>Hostname</th><th>Beschreibung</th><th>Aktion</th></tr>")
-    for device in devices[context[0]]:
-        identifier =    device[0]
-        ip =            device[1]
-        hostname =      device[2]
-        description =   device[3]
-        print("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s %s</td></tr>" % (identifier,ip,hostname,description,get_link_edit(identifier),get_link_details(identifier)))
-    print("</table>")
+    print("<h2>"+context[1]+" ("+context[2]+")</h2>")
+    if len(devices[context[0]]) > 0:
+        print("<table>")
+        print("<tr><th>Identifier</th><th>IP-Adresse</th><th>Hostname</th><th>Beschreibung</th><th>Aktion</th></tr>")
+        for device in devices[context[0]]:
+            identifier =    device[0]
+            ip =            device[1]
+            hostname =      device[2]
+            description =   device[3]
+            print("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s %s</td></tr>" % (identifier,ip,hostname,description,get_link_edit(identifier),get_link_details(identifier)))
+        print("</table>")
 
 print("</body></html>")
