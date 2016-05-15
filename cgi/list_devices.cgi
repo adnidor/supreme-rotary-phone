@@ -18,8 +18,12 @@ cgitb.enable()
 print("Content-type: text/html; charset=UTF-8")
 print()
 
-def get_link(device):
+
+def get_link_edit(device):
     return "<a href=adddevice_form.cgi?edit=true&device="+device+">Edit</a>"
+
+def get_link_details(device):
+    return "<a href=show_device.cgi?device="+device+">Details</a>"
 
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
@@ -31,7 +35,7 @@ contexts = cur.fetchall()
 devices = {}
 
 for context in contexts:
-    cur.execute("SELECT identifier,ip,hostname,altname,description,type,devicetypes.name,connection FROM devices LEFT JOIN devicetypes ON devices.devicetype = devicetypes.number WHERE context = %s ORDER BY INET_ATON(ip)", (context[0],))
+    cur.execute("SELECT identifier,ip,hostname,description FROM devices WHERE context = %s ORDER BY INET_ATON(ip)", (context[0],))
     devices[context[0]] = cur.fetchall()
 
 print("<html><head>")
@@ -41,17 +45,13 @@ print("<h1>Geräte</h1>")
 for context in contexts:
     print("<h2>"+context[1]+"</h2>")
     print("<table>")
-    print("<tr><th>Identifier</th><th>IP-Adresse</th><th>Hostname</th><th>Altname</th><th>Beschreibung</th><th>Typ</th><th>Gerätetyp</th><th>Verbindung</th></tr>")
+    print("<tr><th>Identifier</th><th>IP-Adresse</th><th>Hostname</th><th>Beschreibung</th></tr>")
     for device in devices[context[0]]:
         identifier =    device[0]
         ip =            device[1]
         hostname =      device[2]
-        altname =       device[3]
-        description =   device[4]
-        type =          device[5]
-        devicetype =    device[6]
-        connection =    device[7]
-        print("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (identifier,ip,hostname,altname,description,type,devicetype,connection,get_link(identifier)))
+        description =   device[3]
+        print("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (identifier,ip,hostname,description,get_link_edit(identifier),get_link_details(identifier)))
     print("</table>")
 
 print("</body></html>")

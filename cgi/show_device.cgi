@@ -37,12 +37,13 @@ description =   device[4]
 type =          device[5]
 devicetype =    device[6]
 connection =    device[7]
+fqdn =          helpers.get_fqdn(id)
 
 print("<html><head>")
 print("<title>"+description+"</title>")
 print("</head><body>")
 print("<h1>Detailansicht</h1>")
-print("<h2>"+description+"</h2>")
+print("<h2>"+description+" ("+fqdn+")</h2>")
 print("Identifier: "+identifier)
 print("<br />")
 print("IP-Adresse: "+ip)
