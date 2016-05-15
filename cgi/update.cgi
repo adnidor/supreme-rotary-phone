@@ -22,4 +22,4 @@ if result == 0:
     print("Update successful")
 else:
     print("Update failed with code "+str(result))
-print("<a href=..>Home</a>")
+print("<a href=.>Home</a>")
