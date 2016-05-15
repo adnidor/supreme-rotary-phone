@@ -68,7 +68,7 @@ print("<h1>Add device</h1>")
 print("<form action=adddevice.cgi method=POST>")
 print("Context: <select id='context' name='context'>")
 for cnxt in contexts:
-    if edit and cntxt == context:
+    if edit and cnxt == context:
         print("<option value="+cnxt[0]+" selected>"+cnxt[2]+"</option>")
     else:
         print("<option value="+cnxt[0]+">"+cnxt[2]+"</option>")
