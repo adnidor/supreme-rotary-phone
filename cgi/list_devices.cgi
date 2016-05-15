@@ -45,13 +45,13 @@ print("<h1>Geräte</h1>")
 for context in contexts:
     print("<h2>"+context[1]+"</h2>")
     print("<table>")
-    print("<tr><th>Identifier</th><th>IP-Adresse</th><th>Hostname</th><th>Beschreibung</th></tr>")
+    print("<tr><th>Identifier</th><th>IP-Adresse</th><th>Hostname</th><th>Beschreibung</th><th>Aktion</th></tr>")
     for device in devices[context[0]]:
         identifier =    device[0]
         ip =            device[1]
         hostname =      device[2]
         description =   device[3]
-        print("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (identifier,ip,hostname,description,get_link_edit(identifier),get_link_details(identifier)))
+        print("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s %s</td></tr>" % (identifier,ip,hostname,description,get_link_edit(identifier),get_link_details(identifier)))
     print("</table>")
 
 print("</body></html>")
