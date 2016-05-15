@@ -20,7 +20,7 @@ print()
 
 
 def get_link_edit(device):
-    return "<a href=adddevice_form.cgi?edit=true&device="+device+">Edit</a>"
+    return "<a href=adddevice_form.cgi?action=edit&device="+device+">Edit</a>"
 
 def get_link_details(device):
     return "<a href=show_device.cgi?device="+device+">Details</a>"

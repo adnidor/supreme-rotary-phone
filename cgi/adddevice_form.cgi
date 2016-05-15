@@ -20,9 +20,12 @@ cur = db.cursor()
 
 submitted = cgi.FieldStorage()
 edit = False
-if "edit" in submitted:
+if submitted.getfirst("action") == "edit" :
     edit = True
     dev = submitted.getfirst("device")
+    if dev is None:
+        print("Error")
+        exit(1)
     cur.execute("SELECT context,identifier,ip,hostname,altname,description,type,devicetype,connection FROM devices WHERE identifier = %s", (dev,))
     device = cur.fetchone()
 
