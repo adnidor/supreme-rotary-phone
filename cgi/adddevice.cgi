@@ -33,8 +33,8 @@ type = submitted.getfirst("type").lower()
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-sql = "SELECT ip from devices WHERE context = '"+context+"' ORDER BY INET_ATON(ip) DESC Limit 1";
-cur.execute(sql)
+sql = "SELECT ip from devices WHERE context = %s ORDER BY INET_ATON(ip) DESC Limit 1";
+cur.execute(sql, (context,))
 ip = str(ipaddress.ip_address(cur.fetchone()[0])+1)
 
 print("Context: "+context)
