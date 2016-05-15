@@ -40,6 +40,12 @@ for context in contexts:
 
 print("<html><head>")
 print("<title>Geräte</title>")
+print("<style>")
+print("tr td {")
+print("border: 1px solid;")
+print("}")
+print("table { border-collapse: collapse; }")
+print("</style>")
 print("</head><body>")
 print("<h1>Geräte</h1>")
 for context in contexts:
