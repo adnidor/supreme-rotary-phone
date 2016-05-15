@@ -14,7 +14,9 @@ import cgi
 import cgitb
 cgitb.enable()
 
-print("Content-type: text/html")
+sys.setdefaultencoding('utf-8')
+
+print("Content-type: text/html; charset=UTF-8")
 print()
 
 def get_link(device):
