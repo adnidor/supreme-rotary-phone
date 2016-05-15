@@ -21,3 +21,10 @@ def get_fqdn(identifier):
     else:
         contextstr = "."+context+"."
     return devicename+contextstr+DOMAIN
+
+def get_secs_since_update():
+    file = open("/etc/networkmanagement/last_update")
+    lastchange = int(file.readline())
+    import time
+    timestamp = int(time.time())
+    return timestamp-lastchange

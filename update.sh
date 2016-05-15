@@ -13,4 +13,4 @@ do
     logger -t srp "executing $file"
     $file
 done
-
+date +"%s" > /etc/networkmanagement/last_update
