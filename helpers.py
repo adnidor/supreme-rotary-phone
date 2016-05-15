@@ -29,7 +29,7 @@ def get_secs_since_update():
     timestamp = int(time.time())
     return timestamp-lastchange
 
-def is_user_authorized(cn)
+def is_user_authorized(cn):
     userfile = open("/etc/networkmanagement/authorized_users")
     for line in userfile:
         if line == cn:
