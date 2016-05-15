@@ -18,12 +18,16 @@ cgitb.enable()
 ipregex = re.compile("^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$")
 macregex = re.compile("[0-9a-f]{2}([-:])[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$")
 
+def get_link_details(device):
+    return "show_device.cgi?device="+device
+
 print("Content-type: text/html; charset=UTF-8")
 
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
 if "q" not in cgi.FieldStorage():
+    print()
     print("Kein Gerät angegeben")
     exit(1)
 q = cgi.FieldStorage().getfirst("q")
@@ -49,4 +53,6 @@ else:
     print("unknown format")
     exit(1)
 
-print("Location: show_device.cgi?device="+device)
+print("Location: "+get_link_details(device))
+print()
+print(get_link_details(device))
