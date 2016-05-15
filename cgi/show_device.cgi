@@ -24,10 +24,10 @@ cur = db.cursor()
 if "device" not in cgi.FieldStorage():
     print("Kein Gerät angegeben")
     exit(1)
-device = cgi.FieldStorage().getfirst("device")
+id = cgi.FieldStorage().getfirst("device")
 
-cur.execute("SELECT identifier,ip,hostname,altname,description,type,devicetypes.name,connection FROM devices LEFT JOIN devicetypes ON devices.devicetype = devicetypes.number WHERE identifier = %s ORDER BY INET_ATON(ip)", (device,))
-result = cur.fetchone()
+cur.execute("SELECT identifier,ip,hostname,altname,description,type,devicetypes.name,connection FROM devices LEFT JOIN devicetypes ON devices.devicetype = devicetypes.number WHERE identifier = %s ORDER BY INET_ATON(ip)", (id,))
+device = cur.fetchone()
 
 identifier =    device[0]
 ip =            device[1]
