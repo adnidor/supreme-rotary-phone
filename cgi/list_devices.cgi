@@ -53,3 +53,5 @@ for context in contexts:
         connection =    device[7]
         print("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (identifier,ip,hostname,altname,description,type,devicetype,connection,get_link(identifier)))
     print("</table>")
+
+print("</body></html>")
