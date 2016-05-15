@@ -19,13 +19,14 @@ print("Content-type: text/html; charset=UTF-8")
 print()
 
 common_name = os.getenv("SSL_CLIENT_S_DN_CN")
-auth = "No"
+auth = "Yes" if common_name is not None else "No"
 
 print("<html><head>")
 print("<title>Management</title>")
 print("</head><body>")
 print("<h1>Index</h1>")
-print("User: "+common_name+", authenticated: "+auth)
+print("User: "+str(common_name)+", authenticated: "+auth)
+print("<br />")
 print(str(helpers.get_secs_since_update())+" seconds since last update <a href=update.cgi>Update now</a>")
 print("<br />")
 print("<a href=list_devices.cgi>Geräteliste</a>")
