@@ -62,8 +62,8 @@ print(sql % (identifier,ip,hostname,description,context,devicetype,connection,ty
 try:
     cur.execute(sql, (identifier,ip,hostname,description,context,devicetype,connection,type))
     db.commit()
+    print("Successfully added. <a href=update.cgi>Update</a> <a href=..>Home</a>")
 except:
     db.rollback()
     print("Error")
 
-#exec("sudo /home/yannik/networkmanagement/update.sh");

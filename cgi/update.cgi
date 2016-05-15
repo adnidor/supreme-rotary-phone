@@ -17,4 +17,9 @@ cgitb.enable()
 print("Content-type: text/html")
 print()
 
-print(str(sp.call(["sudo",path+"/update.sh"])))
+result = sp.call(["sudo",path+"/update.sh"])
+if result == 0:
+    print("Update successful")
+else:
+    print("Update failed with code "+str(result))
+print("<a href=..>Home</a>")
