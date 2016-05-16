@@ -73,9 +73,7 @@ for wifi in wifis:
         print("    option encryption 'psk2'")
         print("    option key '"+passphrase+"'")
     if whitelist:
-        maclist = ""
         for device in devices:
-            maclist += "'"+device[0]+"' "
-        print("    option maclist "+maclist.strip())
+            print("    option maclist '"+device[0].strip()+"'")
         print("    option macfilter 'allow'")
     print()
