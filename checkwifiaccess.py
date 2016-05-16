@@ -30,23 +30,16 @@ syslog.syslog("CN: "+common_name)
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-identifier = helpers.get_identifier_from_fqdn(common_name)
-if identifier is None:
+device = helpers.get_device_from_fqdn(common_name)
+if device is None:
     print("Device not found")
     syslog.syslog("Device not found")
     exit(1)
 
-cur.execute("SELECT ip FROM devices WHERE connection='wifi' AND identifier=%s", (identifier,))
-results = cur.fetchall()
-if len(results) == 0:
-    print("Device not authorized")
+if device.connection != "wifi":
     syslog.syslog("Device not authorized")
+    print("Device not authorized")
     exit(1)
-elif len(results) > 1:
-    print("multiple results found, aborting")
-    syslog.syslog("multiple devices found")
-    exit(1)
-syslog.syslog("IP: "+results[0][0])
 
 try:
     exit(call(verify_opensslcommand,shell=True))
