@@ -20,7 +20,7 @@ print()
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-cur.execute("SELECT id, name, channel FROM aps")
+cur.execute("SELECT id, name, channel, model FROM aps")
 aps = cur.fetchall()
 
 cur.execute("SELECT aps,ssid, authmethod, vlans.name, hidden, mode, passphrase FROM wifis LEFT JOIN vlans ON wifis.vlan = vlans.id")
@@ -82,14 +82,16 @@ for wifi in wifis:
 print("</table>")
 
 print("<h2>Access Points</h2>")
-print("<table><tr><th>Name</th><th>Kanal</th></tr>")
+print("<table><tr><th>Name</th><th>Kanal</th><th>Model</th></tr>")
 for ap in aps:
     id = ap[0]
     name = ap[1]
     channel = ap[2]
+    model = ap[3]
     print("<tr>")
     print("<td>%s</td>"%(name,))
     print("<td>%s</td>"%(str(channel),))
+    print("<td>%s</td>"%(model,))
     print("</tr>")
 print("</table>")
 
