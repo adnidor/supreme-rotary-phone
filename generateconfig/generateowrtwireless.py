@@ -75,7 +75,7 @@ for wifi in wifis:
     if whitelist:
         maclist = ""
         for device in devices:
-            maclist += device[0]+" "
-        print("    option maclist '"+maclist.strip()+"'")
+            maclist += "'"+device[0]+"' "
+        print("    option maclist "+maclist.strip())
         print("    option macfilter 'allow'")
     print()
