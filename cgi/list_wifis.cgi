@@ -23,11 +23,14 @@ cur = db.cursor()
 cur.execute("SELECT id, name, channel FROM aps")
 aps = cur.fetchall()
 
-cur.execute("SELECT aps,ssid, authmethod, vlans.name, hidden, mode FROM wifis LEFT JOIN vlans ON wifis.vlan = vlans.id")
+cur.execute("SELECT aps,ssid, authmethod, vlans.name, hidden, mode, passphrase FROM wifis LEFT JOIN vlans ON wifis.vlan = vlans.id")
 wifis = cur.fetchall()
 
 cur.execute("SELECT identifier,devices.description,contexts.description FROM devices JOIN contexts ON devices.context = contexts.name WHERE connection = 'wifi' ORDER BY INET_ATON(devices.ip)")
 devices = cur.fetchall()
+
+common_name = os.getenv("SSL_CLIENT_S_DN_CN")
+authorized = helpers.is_user_authorized(common_name)
 
 print("<html><head>")
 print("<title>WLAN</title>")
@@ -67,6 +70,8 @@ for wifi in wifis:
     vlan = wifi[3] if wifi[3] is not None else "None"
     hidden = "Ja" if wifi[4] == 1 else "Nein"
     mode = wifi[5] 
+    if encryption == "passphrase" and authorized:
+        encryption += " ("+wifi[6]+")"
     print("<tr>")
     print("<td>%s</td>"%(ssid,))
     print("<td>%s</td>"%(vlan,))
