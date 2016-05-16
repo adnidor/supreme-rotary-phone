@@ -9,6 +9,8 @@ DOMAIN=server_config.domain
 
 class Device:
     def __init__(self, identifier):
+        if identifier is None:
+            return
         self.identifier = identifier
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
@@ -39,6 +41,22 @@ class Device:
         else:
             contextstr = "."+self.context+"."
         return self.hostname+contextstr+DOMAIN
+
+    def write_to_db(self):
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        cur.execute("SELECT 1 FROM devices WHERE identifier = %s",(self.identifier,))
+        exists = len(cur.fetchall()) > 0
+        if exists:
+            sql = "UPDATE devices SET ip = %s, context = %s, hostname = %s, altname = %s, description = %s, devicetype = %s, connection = %s WHERE identifier = %s"
+        else:
+            sql = "INSERT INTO devices SET ip = %s, context = %s, hostname = %s, altname = %s, description = %s, devicetype = %s, connection = %s, identifier = %s"
+        try:
+            cur.execute(sql, (self.ip, self.context, self.hostname, self.altname, self.description, self.devicetype, self.connection, self.identifier))
+            db.commit()
+        except:
+            db.rollback()
+        
 
 def get_secs_since_update():
     file = open("/etc/networkmanagement/last_update")
