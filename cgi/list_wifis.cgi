@@ -32,16 +32,10 @@ devices = cur.fetchall()
 print("<html><head>")
 print("<title>WLAN</title>")
 print("<style>")
-print("th,td {")
-print("border: 1px solid;")
-print("}")
+print("th,td { border: 1px solid; }")
 print("table { border-collapse: collapse; }")
-print("tr:nth-child(even) {")
-print("background-color: white;")
-print("}")
-print("tr:nth-child(odd) {")
-print("background-color: silver;")
-print("}")
+print("tr:nth-child(even) { background-color: white; }")
+print("tr:nth-child(odd) { background-color: silver; }")
 print("</style>")
 print("</head><body>")
 print("<h1>WLAN</h1>")
@@ -67,13 +61,6 @@ print("<table>")
 print("<tr><th>SSID</th><th>VLAN</th><th>Access Control</th><th>Versteckt?</th><th>Modus</th><th>Access Points</th></tr>")
 for wifi in wifis:
     apids = wifi[0].split(",")
-    aps = ""
-    for apid in apids:
-        if apid == "":
-            continue
-        aps += get_ap_name(apid)+" "
-    if aps == "":
-        aps = "Keine"
     ssid = wifi[1]
     encryption = wifi[2]
     vlan = wifi[3] if wifi[3] is not None else "None"
@@ -85,7 +72,17 @@ for wifi in wifis:
     print("<td>%s</td>"%(encryption,))
     print("<td>%s</td>"%(hidden,))
     print("<td>%s</td>"%(mode,))
-    print("<td>%s</td>"%(aps,))
+    print("<td>")
+    print("<ul class=aplist>")
+    for ap in aps:
+        id = ap[0]
+        name = ap[1]
+        if str(id) in apids:
+            print("<li><input type='checkbox' disabled checked />%s</li>"%name)
+        else:
+            print("<li><input type='checkbox' disabled />%s</li>"%name)
+    print("</ul>")
+    print("</td>")
     print("</tr>")
 print("</table>")
 
