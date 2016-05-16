@@ -32,6 +32,6 @@ def get_secs_since_update():
 def is_user_authorized(cn):
     userfile = open("/etc/networkmanagement/authorized_users")
     for line in userfile:
-        if line == cn:
+        if cn in line:
             return True
     return False
