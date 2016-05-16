@@ -44,17 +44,6 @@ print("</style>")
 print("</head><body>")
 print("<h1>WLAN</h1>")
 
-print("<h2>Access Points</h2>")
-print("<table><tr><th>Name</th><th>Kanal</th></tr>")
-for ap in aps:
-    id = ap[0]
-    name = ap[1]
-    channel = ap[2]
-    print("<tr>")
-    print("<td>%s</td>"%(name,))
-    print("<td>%s</td>"%(str(channel),))
-    print("</tr>")
-print("</table>")
 
 def get_ap_name(apid):
     cur.execute("SELECT name FROM aps WHERE id = %s", (apid,))
@@ -70,8 +59,8 @@ for wifi in wifis:
     vlan = wifi[3] if wifi[3] is not None else "None"
     hidden = "Ja" if wifi[4] == 1 else "Nein"
     mode = wifi[5] 
-    if encryption == "passphrase" and authorized:
-        encryption += " ("+wifi[6]+")"
+    #if encryption == "passphrase" and authorized:
+    #    encryption += " ("+wifi[6]+")"
     print("<tr>")
     print("<td>%s</td>"%(ssid,))
     print("<td>%s</td>"%(vlan,))
@@ -89,6 +78,18 @@ for wifi in wifis:
             print("<li><input type='checkbox' disabled />%s</li>"%name)
     print("</ul>")
     print("</td>")
+    print("</tr>")
+print("</table>")
+
+print("<h2>Access Points</h2>")
+print("<table><tr><th>Name</th><th>Kanal</th></tr>")
+for ap in aps:
+    id = ap[0]
+    name = ap[1]
+    channel = ap[2]
+    print("<tr>")
+    print("<td>%s</td>"%(name,))
+    print("<td>%s</td>"%(str(channel),))
     print("</tr>")
 print("</table>")
 
