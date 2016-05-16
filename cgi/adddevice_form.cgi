@@ -28,8 +28,7 @@ if submitted.getfirst("action") == "edit" :
     if dev is None:
         print("Error")
         exit(1)
-    cur.execute("SELECT context,identifier,ip,hostname,altname,description,type,devicetype,connection FROM devices WHERE identifier = %s", (dev,))
-    device = cur.fetchone()
+    device = helpers.Device(dev)
 
 context = device[0] if edit else None
 identifier = device[1] if edit else ""
