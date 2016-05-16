@@ -61,7 +61,7 @@ def get_identifier_from_fqdn(fqdn):
     if devcontext is None:
         devcontext = "root"
         host = strip_end(hostcntxt, ".")
-    cur.execute("SELECT identifier FROM devices WHERE hostname = %s AND context = %s",(host,devcontext))
+    cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s) AND context = %s",(host,host,devcontext))
     results = cur.fetchall()
     if len(results) != 1:
         return None
