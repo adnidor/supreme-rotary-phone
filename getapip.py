@@ -2,7 +2,6 @@
 #coding=utf-8
 import mysql.connector as ms
 import sys
-from helpers import get_fqdn
 from importlib.machinery import SourceFileLoader
 
 server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()

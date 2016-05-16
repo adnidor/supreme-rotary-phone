@@ -5,24 +5,38 @@ from importlib.machinery import SourceFileLoader
 
 server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
 
-
 DOMAIN=server_config.domain
 
-def get_fqdn(identifier):
-    db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-    cur = db.cursor()
+class Device:
+    def __init__(self, identifier):
+        self.identifier = identifier
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        cur.execute("SELECT ip,context,hostname,altname,description,type,devicetype,connection FROM devices WHERE identifier = %s", (identifier,))
+        result = cur.fetchone()
+        if result is None:
+            raise KeyError("Device not found")
+        self.ip = result[0]
+        self.context = result[1]
+        self.hostname = result[2]
+        self.altname = result[3]
+        self.description = result[4]
+        self.type = result[5]
+        self.devicetype = result[6]
+        self.connection = result[7]
 
-    cur.execute("SELECT hostname,context FROM devices WHERE identifier='"+identifier+"'")
-    devices = cur.fetchall()
-    if len(devices) != 1:
-        return None
-    devicename = devices[0][0]
-    context = devices[0][1]
-    if context == "root":
-        contextstr = "."
-    else:
-        contextstr = "."+context+"."
-    return devicename+contextstr+DOMAIN
+    def __str__(self):
+        return self.get_fqdn()
+
+    def __repr__(self):
+        return self.identifier
+
+    def get_fqdn(self):
+        if self.context == "root":
+            contextstr = "."
+        else:
+            contextstr = "."+self.context+"."
+        return self.hostname+contextstr+DOMAIN
 
 def get_secs_since_update():
     file = open("/etc/networkmanagement/last_update")
@@ -43,7 +57,7 @@ def strip_end(text, suffix):
         return text
     return text[:len(text)-len(suffix)]
 
-def get_identifier_from_fqdn(fqdn):
+def get_device_from_fqdn(fqdn):
     if not fqdn.endswith(DOMAIN):
         return None
     hostcntxt = strip_end(fqdn, "."+DOMAIN)
@@ -65,5 +79,6 @@ def get_identifier_from_fqdn(fqdn):
     results = cur.fetchall()
     if len(results) != 1:
         return None
-    return results[0][0]
+    return Device(results[0][0])
+
 
