@@ -36,7 +36,7 @@ print("<tr><td>IP-Adresse:</td><td>"+device.ip+"</td></tr>")
 print("<tr><td>Hostname:</td><td>"+device.hostname+"</td></tr>")
 print("<tr><td>Alternativer Hostname:</td><td>"+device.altname+"</td></tr>")
 print("<tr><td>Adresstyp:</td><td>"+device.type+"</td></tr>")
-print("<tr><td>Gerätetyp:</td><td>"+device.devicetype+"</td></tr>")
+print("<tr><td>Gerätetyp:</td><td>"+device.devicetype_str+"</td></tr>")
 print("<tr><td>Verbindungtyp:</td><td>"+device.connection+"</td></tr>")
 print("</table>")
 
