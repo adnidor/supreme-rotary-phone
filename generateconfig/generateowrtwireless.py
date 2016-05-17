@@ -38,10 +38,10 @@ print("    option country 'DE'")
 print("    option channel '"+str(channel)+"'")
 print()
 
-cur.execute("SELECT aps,ssid, authmethod, vlan, hidden, passphrase, mode,whitelist FROM wifis")
+cur.execute("SELECT aps,ssid, authmethod, vlan, hidden, passphrase, mode,whitelist,id FROM wifis")
 wifis = cur.fetchall()
 
-cur.execute("SELECT identifier FROM devices WHERE connection = 'wifi'")
+cur.execute("SELECT identifier,ports FROM devices WHERE connection = 'wifi'")
 devices = cur.fetchall()
 
 for wifi in wifis:
@@ -55,6 +55,7 @@ for wifi in wifis:
     passphrase = wifi[5]
     mode = wifi[6]
     whitelist = wifi[7]
+    id = wifi[8]
     print("config wifi-iface")
     print("    option device 'radio0'")
     print("    option mode '"+mode+"'")
@@ -74,6 +75,9 @@ for wifi in wifis:
         print("    option key '"+passphrase+"'")
     if whitelist:
         for device in devices:
-            print("    list maclist '"+device[0].strip()+"'")
+            name = device[0]
+            ports = device[1]
+            if str(id) in ports.split(","):
+                print("    list maclist '"+name.strip()+"'")
         print("    option macfilter 'allow'")
     print()

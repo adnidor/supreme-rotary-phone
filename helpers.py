@@ -14,7 +14,7 @@ class Device:
         self.identifier = identifier
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
-        cur.execute("SELECT ip,context,hostname,altname,description,type,devicetype,connection, devicetypes.name FROM devices LEFT JOIN devicetypes ON devices.devicetype = devicetypes.number WHERE identifier = %s", (identifier,))
+        cur.execute("SELECT ip,context,hostname,altname,description,type,devicetype,connection, devicetypes.name FROM devices LEFT JOIN devicetypes ON devices.devicetype = devicetypes.number,ports WHERE identifier = %s", (identifier,))
         result = cur.fetchone()
         if result is None:
             raise KeyError("Device not found")
@@ -27,6 +27,7 @@ class Device:
         self.devicetype = result[6]
         self.connection = result[7]
         self.devicetype_str = result[8]
+        self.ports = result[9}.split(",")
         self.fqdn = self.get_fqdn()
 
     def __str__(self):

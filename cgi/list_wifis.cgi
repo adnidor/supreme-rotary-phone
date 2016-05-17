@@ -26,7 +26,7 @@ aps = cur.fetchall()
 cur.execute("SELECT aps,ssid, authmethod, vlans.name, hidden, mode, whitelist FROM wifis LEFT JOIN vlans ON wifis.vlan = vlans.id")
 wifis = cur.fetchall()
 
-cur.execute("SELECT identifier,devices.description,contexts.description FROM devices JOIN contexts ON devices.context = contexts.name WHERE connection = 'wifi' ORDER BY INET_ATON(devices.ip)")
+cur.execute("SELECT identifier,devices.description,contexts.description,ports FROM devices JOIN contexts ON devices.context = contexts.name WHERE connection = 'wifi' ORDER BY INET_ATON(devices.ip)")
 devices = cur.fetchall()
 
 common_name = os.getenv("SSL_CLIENT_S_DN_CN")
@@ -101,16 +101,22 @@ def get_link_details(device):
     return "<a href=show_device.cgi?device="+device+">Details</a>"
 
 print("<h2>Geräte</h2>")
-print("<table><tr><th>Name</th><th>Kontext</th><th>MAC</th><th></tr>")
+print("<table><tr><th>Name</th><th>Kontext</th><th>MAC</th><th>Netzwerke</th><th></th></tr>")
 for device in devices:
     mac = device[0]
     description = device[1]
     context = device[2]
     link = get_link_details(mac)
+    ports = device[3].split(",")
     print("<tr>")
     print("<td>%s</td>"%(description,))
     print("<td>%s</td>"%(context,))
     print("<td>%s</td>"%(mac,))
+    print("<td>")
+    for port in ports:
+        cur.execute("SELECT ssid FROM wifis WHERE id=%s",(port,))
+        print(cur.fetchone()[0])
+    print("</td>")
     print("<td>%s</td>"%(link,))
     print("</tr>")
 print("</table>")
