@@ -27,7 +27,7 @@ class Device:
         self.devicetype = result[6]
         self.connection = result[7]
         self.devicetype_str = result[8]
-        self.ports = result[9}.split(",")
+        self.ports = result[9].split(",")
         self.fqdn = self.get_fqdn()
 
     def __str__(self):
