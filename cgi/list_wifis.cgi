@@ -23,7 +23,7 @@ cur = db.cursor()
 cur.execute("SELECT id, name, channel, model FROM aps")
 aps = cur.fetchall()
 
-cur.execute("SELECT aps,ssid, authmethod, vlans.name, hidden, mode, passphrase FROM wifis LEFT JOIN vlans ON wifis.vlan = vlans.id")
+cur.execute("SELECT aps,ssid, authmethod, vlans.name, hidden, mode, whitelist FROM wifis LEFT JOIN vlans ON wifis.vlan = vlans.id")
 wifis = cur.fetchall()
 
 cur.execute("SELECT identifier,devices.description,contexts.description FROM devices JOIN contexts ON devices.context = contexts.name WHERE connection = 'wifi' ORDER BY INET_ATON(devices.ip)")
@@ -51,7 +51,7 @@ def get_ap_name(apid):
 
 print("<h2>Netzwerke</h2>")
 print("<table>")
-print("<tr><th>SSID</th><th>VLAN</th><th>Access Control</th><th>Versteckt?</th><th>Modus</th><th>Access Points</th></tr>")
+print("<tr><th>SSID</th><th>VLAN</th><th>Access Control</th><th>Versteckt?</th><th>Modus</th><th>Access Points</th><th>Whitelist?</th></tr>")
 for wifi in wifis:
     apids = wifi[0].split(",")
     ssid = wifi[1]
@@ -59,6 +59,7 @@ for wifi in wifis:
     vlan = wifi[3] if wifi[3] is not None else "None"
     hidden = "Ja" if wifi[4] == 1 else "Nein"
     mode = wifi[5] 
+    whitelist = "Ja" if wifi[6] == 1 else "Nein"
     #if encryption == "passphrase" and authorized:
     #    encryption += " ("+wifi[6]+")"
     print("<tr>")
@@ -77,6 +78,7 @@ for wifi in wifis:
         else:
             print("<li><input type='checkbox' disabled />%s</li>"%name)
     print("</ul>")
+    print("<td>%s</td>"%(whitelist,))
     print("</td>")
     print("</tr>")
 print("</table>")
