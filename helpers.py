@@ -28,6 +28,8 @@ class Device:
         self.connection = result[7]
         self.devicetype_str = result[8]
         self.ports = result[9].split(",")
+        if self.ports == ['']:
+            self.ports = []
         self.ports_str = []
         if self.connection == "wifi":
             for port in self.ports:
