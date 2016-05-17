@@ -32,7 +32,7 @@ print(".netlist { margin: 0; }")
 print("</style>")
 print("</head><body>")
 print("<h1>Detailansicht</h1>")
-print("<h2>"+device.description+" ("+device.get_fqdn()+")</h2>")
+print("<h2>"+device.description+" ("+device.fqdn+")</h2>")
 print("<table>")
 print("<tr><td>Identifier:</td><td>"+device.identifier+"</td></tr>")
 print("<tr><td>IP-Adresse:</td><td>"+device.ip+"</td></tr>")
@@ -44,9 +44,8 @@ print("<tr><td>Verbindungtyp:</td><td>"+device.connection+"</td></tr>")
 if device.connection == "wifi":
     print("<tr><td>Netzwerke</td>")
     print("<td><ul class=netlist>")
-    for port in device.ports:
-        cur.execute("SELECT ssid FROM wifis WHERE id=%s",(port,))
-        print("<li>"+cur.fetchone()[0]+"</li>")
+    for port in device.ports_str:
+        print("<li>"+port+"</li>")
     print("</ul></td>")
 
 print("</table>")
