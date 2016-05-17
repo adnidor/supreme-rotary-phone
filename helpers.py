@@ -7,6 +7,40 @@ server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server
 
 DOMAIN=server_config.domain
 
+class Context:
+    def __init__(self, name=None, id=None):
+        if name is None and id is None:
+            return
+        if name is not None:
+            self.name = name
+            db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+            cur = db.cursor()
+            cur.execute("SELECT i,iprange,description,dhcp FROM contexts WHERE name = %s", (name,))
+            result = cur.fetchone()
+            if result is None:
+                raise KeyError("Context not found")
+            self.id = result[0]
+            self.iprange = result[1]
+            self.description = result[2]
+            self.dhcp = True if result[3] == 1 else False
+        elif id is not None:
+            self.id = id
+            db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+            cur = db.cursor()
+            cur.execute("SELECT name,iprange,description,dhcp FROM contexts WHERE i = %s", (id,))
+            result = cur.fetchone()
+            if result is None:
+                raise KeyError("Context not found")
+            self.name = result[0]
+            self.iprange = result[1]
+            self.description = result[2]
+            self.dhcp = True if result[3] == 1 else False
+    def __repr__(self):
+        return str(self.id)
+
+    def __str__(self):
+        return self.description
+
 class Device:
     def __init__(self, identifier):
         if identifier is None:
@@ -64,8 +98,41 @@ class Device:
             db.commit()
         except:
             db.rollback()
-        
 
+def get_devices_where(statement,vars=None):
+    db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+    cur = db.cursor()
+    sql = "SELECT identifier FROM devices WHERE "+statement
+    if vars is None:
+        cur.execute(sql)
+    else:
+        cur.execute(sql,vars)
+    results = cur.fetchall()
+    devices = []
+    for result in results:
+        devices.append(Device(result[0]))
+    return devices
+
+def get_all_devices():
+    return get_devices_where("1=1")
+
+def get_contexts_where(statement,vars=None):
+    db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+    cur = db.cursor()
+    sql = "SELECT i FROM contexts WHERE "+statement
+    if vars is None:
+        cur.execute(sql)
+    else:
+        cur.execute(sql,vars)
+    results = cur.fetchall()
+    contexts = []
+    for result in results:
+        contexts.append(Context(id=result[0]))
+    return contexts
+
+def get_all_contexts():
+    return get_contexts_where("1=1")
+        
 def get_secs_since_update():
     file = open("/etc/networkmanagement/last_update")
     lastchange = int(file.readline())
