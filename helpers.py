@@ -28,6 +28,11 @@ class Device:
         self.connection = result[7]
         self.devicetype_str = result[8]
         self.ports = result[9].split(",")
+        self.ports_str = []
+        if self.connection == "wifi":
+            for port in self.ports:
+                cur.execute("SELECT ssid FROM wifis WHERE id=%s",(port,))
+                self.ports_str.append(cur.fetchone()[0])
         self.fqdn = self.get_fqdn()
 
     def __str__(self):
