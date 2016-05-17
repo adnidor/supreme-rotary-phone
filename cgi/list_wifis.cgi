@@ -116,7 +116,10 @@ for device in devices:
     print("<td><ul class=netlist>")
     for port in ports:
         cur.execute("SELECT ssid FROM wifis WHERE id=%s",(port,))
-        print("<li>"+cur.fetchone()[0]+"</li>")
+        result = cur.fetchone()
+        if result is None:
+            continue
+        print("<li>"+result[0]+"</li>")
     print("</ul></td>")
     print("<td>%s</td>"%(link,))
     print("</tr>")
