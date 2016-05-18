@@ -70,9 +70,9 @@ print("<form action="+action+" method=POST>")
 print("Context: <select id='context' name='context'>")
 for cnxt in contexts:
     if edit and cnxt == context:
-        print("<option value="+cnxt.id+" selected>"+cnxt.description+"</option>")
+        print("<option value="+str(cnxt.id)+" selected>"+cnxt.description+"</option>")
     else:
-        print("<option value="+cnxt.id+">"+cnxt.description+"</option>")
+        print("<option value="+str(cnxt.id)+">"+cnxt.description+"</option>")
 print("</select> <a href=# onclick=prefill()>prefill</a>")
 print("<br />")
 print("Identifier: <input type=text name=identifier id=mac value='"+identifier+"' />")
