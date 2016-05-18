@@ -12,7 +12,7 @@ class Context:
     def __init__(self, name=None, id=None):
         if name is None and id is None:
             return
-        if name is not None:
+        if name is not None and type(name) == type("fdsfs"):
             self.name = name
             db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
             cur = db.cursor()
@@ -59,10 +59,8 @@ class Device:
                     devices.devicetype,
                     devices.connection,
                     devicetypes.name,
-                    devices.ports,
-                    contexts.description
+                    devices.ports
                  FROM devices 
-                    LEFT JOIN contexts ON contexts.name = devices.context
                     LEFT JOIN devicetypes ON devicetypes.number = devices.devicetype
                  WHERE
                     identifier = %s
@@ -72,8 +70,7 @@ class Device:
         if result is None:
             raise KeyError("Device not found")
         self.ip = result[0]
-        self.context = result[1]
-        self.context_str = result[10]
+        self.context = Context(id=result[1])
         self.hostname = result[2]
         self.altname = result[3]
         self.description = result[4]
@@ -98,10 +95,10 @@ class Device:
         return "<Device "+self.identifier+">"
 
     def get_fqdn(self):
-        if self.context == "root":
+        if self.context.name == "root":
             contextstr = "."
         else:
-            contextstr = "."+self.context+"."
+            contextstr = "."+self.context.name+"."
         return self.hostname+contextstr+DOMAIN
 
     def get_key(x):
@@ -181,19 +178,18 @@ def get_device_from_fqdn(fqdn):
     hostcntxt = strip_end(fqdn, "."+DOMAIN)
     db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
     cur = db.cursor()
-    cur.execute("SELECT name FROM contexts")
-    contexts = cur.fetchall()
+    contexts = get_all_contexts()
     devcontext = None
     host = None
     for context in contexts:
-        if hostcntxt.endswith(context[0]):
-            devcontext = context[0]
-            host = strip_end(hostcntxt,"."+devcontext)
+        if hostcntxt.endswith(context.name):
+            devcontext = context
+            host = strip_end(hostcntxt,"."+devcontext.name)
             break
     if devcontext is None:
-        devcontext = "root"
+        devcontext = Context(name="root")
         host = strip_end(hostcntxt, ".")
-    cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s) AND context = %s",(host,host,devcontext))
+    cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s) AND context = %s",(host,host,devcontext.id))
     results = cur.fetchall()
     if len(results) != 1:
         return None

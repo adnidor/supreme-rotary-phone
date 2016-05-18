@@ -30,19 +30,17 @@ if submitted.getfirst("action") == "edit" :
         exit(1)
     device = helpers.Device(dev)
 
-context = device[0] if edit else None
-identifier = device[1] if edit else ""
-ip = device[2] if edit else None
-hostname = device[3] if edit else ""
-altname = device[4] if edit else None
-description = device[5] if edit else ""
-type = device[6] if edit else "dhcp"
-devicetype = device[7] if edit else 0
-connection = device[8] if edit else "ethernet"
+context = device.context if edit else None
+identifier = device.identifier if edit else ""
+ip = device.ip if edit else None
+hostname = device.hostname if edit else ""
+altname = device.altname if edit else None
+description = device.description if edit else ""
+type = device.type if edit else "dhcp"
+devicetype = device.devicetype if edit else 0
+connection = device.connection if edit else "ethernet"
 
-sql = "SELECT name, iprange, description FROM contexts";
-cur.execute(sql)
-contexts = cur.fetchall()
+contexts = helpers.get_all_contexts()
 
 sql = "SELECT name, number FROM devicetypes";
 cur.execute(sql)
@@ -50,8 +48,8 @@ devicetypes = cur.fetchall()
 
 
 calling_ip = os.getenv('REMOTE_ADDR')
-mac = subprocess.check_output(["/opt/get_mac_from_ip.sh", calling_ip], universal_newlines=True).strip()
-#mac = "aa:bb:cc:dd:ee:ff"
+#mac = subprocess.check_output(["/opt/get_mac_from_ip.sh", calling_ip], universal_newlines=True).strip()
+mac = "aa:bb:cc:dd:ee:ff"
 
 print("<html>")
 print("<head>")
@@ -71,10 +69,10 @@ action="adddevice.cgi" if not edit else "editdevice.cgi"
 print("<form action="+action+" method=POST>")
 print("Context: <select id='context' name='context'>")
 for cnxt in contexts:
-    if edit and cnxt[0] == context:
-        print("<option value="+cnxt[0]+" selected>"+cnxt[2]+"</option>")
+    if edit and cnxt == context:
+        print("<option value="+cnxt.id+" selected>"+cnxt.description+"</option>")
     else:
-        print("<option value="+cnxt[0]+">"+cnxt[2]+"</option>")
+        print("<option value="+cnxt.id+">"+cnxt.description+"</option>")
 print("</select> <a href=# onclick=prefill()>prefill</a>")
 print("<br />")
 print("Identifier: <input type=text name=identifier id=mac value='"+identifier+"' />")

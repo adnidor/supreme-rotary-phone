@@ -105,7 +105,7 @@ print("<table><tr><th>Name</th><th>Kontext</th><th>MAC</th><th>Netzwerke</th><th
 for device in devices:
     print("<tr>")
     print("<td>%s</td>"%(device.description,))
-    print("<td>%s</td>"%(device.context_str,))
+    print("<td>%s</td>"%(device.context.description,))
     print("<td>%s</td>"%(device.identifier,))
     print("<td><ul class=netlist>")
     for port in device.ports_str:

@@ -16,14 +16,14 @@ if len(sys.argv) != 2:
 identifier = sys.argv[1]
 
 device = Device(identifier)
-new_hostname = device.hostname+"."+device.context
+new_hostname = device.hostname+"."+device.context.name
 cur.execute("SELECT INET_ATON(ip) from devices WHERE context = 'vpn' ORDER BY INET_ATON(ip) DESC Limit 1")
 new_ip = str(ipaddress.ip_address(cur.fetchone()[0]+1))
 
 sql = "INSERT INTO devices (identifier,ip,context,hostname,description,connection) VALUES ('%s','%s','vpn','%s','%s','openvpn')"
-print(sql,(device.get_fqdn(),new_ip,new_hostname,device.description)
+print(sql%(device.fqdn,new_ip,new_hostname,device.description))
 try:
-    cur.execute(sql)
+    cur.execute(sql,(device.fqdn,new_ip,new_hostname,device.description))
     db.commit()
 except:
     db.rollback()

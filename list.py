@@ -10,7 +10,11 @@ server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-targets = {"aps":{"table":"aps", "column":"name", "convert":lambda x: x},"contexts":{"table":"contexts","column":"name", "convert":lambda x: x},"devices":{"table":"devices","column":"identifier","convert":lambda x: helpers.Device(x).fqdn}}
+targets = {
+           "aps":      {"table":"aps", "column":"name", "convert":lambda x: x},
+           "contexts": {"table":"contexts","column":"name", "convert":lambda x: x},
+           "devices":  {"table":"devices","column":"identifier","convert":lambda x: helpers.Device(x).fqdn}
+          }
 
 if len(sys.argv) != 2:
     print("usage: "+sys.argv[0]+" <target>")
