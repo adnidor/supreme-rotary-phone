@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 #coding=utf-8
-import mysql.connector as ms
-from importlib.machinery import SourceFileLoader
-
-server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
+import os,sys
+path = os.path.abspath(os.path.realpath(__file__)+"/../..")
+sys.path.append(path)
+sys.path.append("/etc/networkmanagement")
+import server_config
+import helpers
 
 
 
@@ -11,18 +13,10 @@ print("====== Kontexte ======")
 print("DO NOT EDIT - This file is generated automatically")
 print("^Name ^IP-Range ^Beschreibung ^Link ^DHCP ^")
 
-db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-cur = db.cursor()
-
-cur.execute("SELECT name,description,iprange,dhcp FROM contexts")
-
-contexts = cur.fetchall()
+contexts = helpers.get_all_contexts()
 
 for context in contexts:
-    contextname  = context[0]
-    contextdesc  = context[1]
-    contextrange = context[2]
-    contextdhcp = "Ja" if (context[3] == 1) else "Nein"
-    print("|"+contextname+"|"+contextrange+"|"+contextdesc+"|[[network:devices_generated#"+contextdesc.lower()+"|Geräte]]|"+contextdhcp+"|")
+    dhcp = "Ja" if context.dhcp else "Nein"
+    print("|"+context.name+"|"+context.iprange+"|"+context.description+"|[[network:devices_generated#"+context.description.lower()+"|Geräte]]|"+dhcp+"|")
 
 
