@@ -37,10 +37,16 @@ class Context:
             self.description = result[2]
             self.dhcp = True if result[3] == 1 else False
     def __repr__(self):
-        return str(self.id)
+        return "<Context "+str(self.id)+">"
 
     def __str__(self):
         return self.description
+
+    def __eq__(self, other):
+        return (self.id == other.id) and (self.name == other.name)
+
+    def __ne__(self, other):
+        return (self.id != other.id) or (self.name != other.name)
 
 class Device:
     def __init__(self, identifier):
@@ -93,6 +99,12 @@ class Device:
 
     def __repr__(self):
         return "<Device "+self.identifier+">"
+
+    def __eq__(self, other):
+        return (self.identifier == other.identifier)
+
+    def __ne__(self, other):
+        return (self.identifier != other.identifier)
 
     def get_fqdn(self):
         if self.context.name == "root":
