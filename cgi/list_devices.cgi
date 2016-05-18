@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 #coding=utf-8
+import struct,socket
 import sys,os
 path = os.path.abspath(os.path.realpath(__file__)+"/../..")
 sys.path.append(path)
@@ -21,8 +22,10 @@ def get_link_details(device):
 
 contexts = helpers.get_all_contexts()
 devices = {}
+def get_key(x):
+    return struct.unpack("!I", socket.inet_aton(x.ip))[0]
 for context in contexts:
-    devices[context] = sorted(helpers.get_devices_where("context = %s", (context.name,)), key=lambda x: x.ip)
+    devices[context] = sorted(helpers.get_devices_where("context = %s", (context.name,)), key=get_key)
 
 print("<html><head>")
 print("<title>Geräte</title>")
