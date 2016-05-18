@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 #coding=utf-8
-import mysql.connector as ms
 import os,sys
 path = os.path.abspath(os.path.realpath(__file__)+"/../..")
 sys.path.append(path)
@@ -12,11 +11,6 @@ import helpers
 
 print("====== Geräte ======")
 print("DO NOT EDIT - This file is generated automatically")
-
-db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-cur = db.cursor()
-
-cur.execute("SELECT name, description FROM contexts")
 
 contexts = helpers.get_all_contexts()
 
