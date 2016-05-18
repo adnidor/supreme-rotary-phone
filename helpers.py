@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 #coding=utf-8
 import mysql.connector as ms
+import socket,struct
 from importlib.machinery import SourceFileLoader
 
 server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
@@ -48,7 +49,25 @@ class Device:
         self.identifier = identifier
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
-        cur.execute("SELECT ip,context,hostname,altname,description,type,devicetype,connection, devicetype_str,ports,context_str FROM devices_with_strings WHERE identifier = %s", (identifier,))
+        sql = """SELECT
+                    devices.ip,
+                    devices.context,
+                    devices.hostname,
+                    devices.altname,
+                    devices.description,
+                    devices.type,
+                    devices.devicetype,
+                    devices.connection,
+                    devicetypes.name,
+                    devices.ports,
+                    contexts.description
+                 FROM devices 
+                    LEFT JOIN contexts ON contexts.name = devices.context
+                    LEFT JOIN devicetypes ON devicetypes.number = devices.devicetype
+                 WHERE
+                    identifier = %s
+              """
+        cur.execute(sql, (identifier,))
         result = cur.fetchone()
         if result is None:
             raise KeyError("Device not found")
@@ -85,17 +104,20 @@ class Device:
             contextstr = "."+self.context+"."
         return self.hostname+contextstr+DOMAIN
 
+    def get_key(x):
+        return struct.unpack("!I", socket.inet_aton(x.ip))[0]
+
     def write_to_db(self):
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
         cur.execute("SELECT 1 FROM devices WHERE identifier = %s",(self.identifier,))
         exists = len(cur.fetchall()) > 0
         if exists:
-            sql = "UPDATE devices SET ip = %s, context = %s, hostname = %s, altname = %s, description = %s, devicetype = %s, connection = %s WHERE identifier = %s"
+            sql = "UPDATE devices SET ip = %s, context = %s, hostname = %s, altname = %s, description = %s, devicetype = %s, connection = %s, ports = %s WHERE identifier = %s"
         else:
-            sql = "INSERT INTO devices SET ip = %s, context = %s, hostname = %s, altname = %s, description = %s, devicetype = %s, connection = %s, identifier = %s"
+            sql = "INSERT INTO devices SET ip = %s, context = %s, hostname = %s, altname = %s, description = %s, devicetype = %s, connection = %s, identifier = %s, ports = %s"
         try:
-            cur.execute(sql, (self.ip, self.context, self.hostname, self.altname, self.description, self.devicetype, self.connection, self.identifier))
+            cur.execute(sql, (self.ip, self.context, self.hostname, self.altname, self.description, self.devicetype, self.connection, self.identifier, ",".join(self.ports)))
             db.commit()
         except:
             db.rollback()
@@ -112,7 +134,7 @@ def get_devices_where(statement,vars=None):
     devices = []
     for result in results:
         devices.append(Device(result[0]))
-    return devices
+    return sorted(devices, key=Device.get_key)
 
 def get_all_devices():
     return get_devices_where("1=1")
