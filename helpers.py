@@ -48,12 +48,13 @@ class Device:
         self.identifier = identifier
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
-        cur.execute("SELECT ip,context,hostname,altname,description,type,devicetype,connection, devicetypes.name,ports FROM devices LEFT JOIN devicetypes ON devices.devicetype = devicetypes.number WHERE identifier = %s", (identifier,))
+        cur.execute("SELECT ip,context,hostname,altname,description,type,devicetype,connection, devicetype_str,ports,context_str FROM devices_with_strings WHERE identifier = %s", (identifier,))
         result = cur.fetchone()
         if result is None:
             raise KeyError("Device not found")
         self.ip = result[0]
         self.context = result[1]
+        self.context_str = result[10]
         self.hostname = result[2]
         self.altname = result[3]
         self.description = result[4]
@@ -75,7 +76,7 @@ class Device:
         return self.get_fqdn()
 
     def __repr__(self):
-        return self.identifier
+        return "<Device "+self.identifier+">"
 
     def get_fqdn(self):
         if self.context == "root":

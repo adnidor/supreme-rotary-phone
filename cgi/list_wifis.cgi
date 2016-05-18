@@ -26,8 +26,7 @@ aps = cur.fetchall()
 cur.execute("SELECT aps,ssid, authmethod, vlans.name, hidden, mode, whitelist FROM wifis LEFT JOIN vlans ON wifis.vlan = vlans.id")
 wifis = cur.fetchall()
 
-cur.execute("SELECT identifier,devices.description,contexts.description,ports FROM devices JOIN contexts ON devices.context = contexts.name WHERE connection = 'wifi' ORDER BY INET_ATON(devices.ip)")
-devices = cur.fetchall()
+devices = helpers.get_devices_where("connection = 'wifi'")
 
 common_name = os.getenv("SSL_CLIENT_S_DN_CN")
 authorized = helpers.is_user_authorized(common_name)
@@ -104,24 +103,15 @@ def get_link_details(device):
 print("<h2>Geräte</h2>")
 print("<table><tr><th>Name</th><th>Kontext</th><th>MAC</th><th>Netzwerke</th><th></th></tr>")
 for device in devices:
-    mac = device[0]
-    description = device[1]
-    context = device[2]
-    link = get_link_details(mac)
-    ports = device[3].split(",")
     print("<tr>")
-    print("<td>%s</td>"%(description,))
-    print("<td>%s</td>"%(context,))
-    print("<td>%s</td>"%(mac,))
+    print("<td>%s</td>"%(device.description,))
+    print("<td>%s</td>"%(device.context_str,))
+    print("<td>%s</td>"%(device.identifier,))
     print("<td><ul class=netlist>")
-    for port in ports:
-        cur.execute("SELECT ssid FROM wifis WHERE id=%s",(port,))
-        result = cur.fetchone()
-        if result is None:
-            continue
-        print("<li>"+result[0]+"</li>")
+    for port in device.ports_str:
+        print("<li>"+port+"</li>")
     print("</ul></td>")
-    print("<td>%s</td>"%(link,))
+    print("<td>%s</td>"%(get_link_details(device.identifier),))
     print("</tr>")
 print("</table>")
 
