@@ -48,6 +48,9 @@ class Context:
     def __ne__(self, other):
         return (self.id != other.id) or (self.name != other.name)
 
+    def __hash__(self):
+        return self.id
+
 class Device:
     def __init__(self, identifier):
         if identifier is None:
@@ -130,6 +133,9 @@ class Device:
             db.commit()
         except:
             db.rollback()
+
+    def __hash__(self):
+        return hash(self.identifier)
 
 def get_devices_where(statement,vars=None):
     db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
