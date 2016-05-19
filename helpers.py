@@ -45,9 +45,6 @@ class Context:
     def __eq__(self, other):
         return (self.id == other.id) and (self.name == other.name)
 
-    def __ne__(self, other):
-        return (self.id != other.id) or (self.name != other.name)
-
     def __hash__(self):
         return self.id
 
@@ -105,9 +102,6 @@ class Device:
 
     def __eq__(self, other):
         return (self.identifier == other.identifier)
-
-    def __ne__(self, other):
-        return (self.identifier != other.identifier)
 
     def get_fqdn(self):
         if self.context.name == "root":
