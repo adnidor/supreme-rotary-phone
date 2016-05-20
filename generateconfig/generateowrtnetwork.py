@@ -47,6 +47,7 @@ for vlan in vlans:
         print("    option proto 'dhcp'")
     else:
         print("    option proto 'none'")
+        print("    option ipv6 0")
     print()
 
 if switchconfig is not None:
