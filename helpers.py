@@ -84,7 +84,9 @@ class Device:
         self.devicetype = result[6]
         self.connection = result[7]
         self.devicetype_str = result[8]
-        self.ports = result[9].split(",")
+        self.ports = result[9].split(",") if self.connection == "wifi" else []
+        self.port = result[9].split("/") if self.connection == "ethernet" else ['']
+        self.port_str = ""
         if self.ports == ['']:
             self.ports = []
         self.ports_str = []
@@ -92,6 +94,11 @@ class Device:
             for port in self.ports:
                 cur.execute("SELECT ssid FROM wifis WHERE id=%s",(port,))
                 self.ports_str.append(cur.fetchone()[0])
+        elif self.connection == "ethernet" and self.port != ['']:
+            sql = "SELECT description FROM switches WHERE id=%s"
+            cur.execute(sql,(self.port[0],))
+            result = cur.fetchone()[0]
+            self.port_str = "Port %s auf %s"%(self.port[1],result)
         self.fqdn = self.get_fqdn()
 
     def __str__(self):
