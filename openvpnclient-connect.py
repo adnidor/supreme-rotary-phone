@@ -21,7 +21,9 @@ tmp_file = open(tmp_filepath, "w")
 syslog.syslog("tmp_file: "+tmp_filepath)
 
 common_name = os.getenv("common_name")
+config_file = os.getenv("config")
 syslog.syslog("CN: "+common_name)
+syslog.syslog("Config: "+config)
 
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
