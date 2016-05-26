@@ -22,13 +22,15 @@ syslog.syslog("tmp_file: "+tmp_filepath)
 
 common_name = os.getenv("common_name")
 config_file = os.getenv("config")
+port = os.path.basename(config_file)
 syslog.syslog("CN: "+str(common_name))
 syslog.syslog("Config: "+str(config_file))
+syslog.syslog("Port: "+str(port))
 
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 cur = db.cursor()
 
-cur.execute("SELECT ip FROM devices WHERE connection='openvpn' AND identifier=%s", (common_name,))
+cur.execute("SELECT ip,port FROM devices WHERE connection='openvpn' AND identifier=%s", (common_name,))
 results = cur.fetchall()
 if len(results) == 0:
     print("CN not found")
@@ -37,6 +39,10 @@ if len(results) == 0:
 elif len(results) > 1:
     print("multiple results found, aborting")
     syslog.syslog("multiple devices found")
+    exit(1)
+
+if results[0][1] != port:
+    syslog.syslog("wrong network")
     exit(1)
 syslog.syslog("IP: "+results[0][0])
 tmp_file.write("ifconfig-push "+results[0][0]+" 255.255.255.0\n")
