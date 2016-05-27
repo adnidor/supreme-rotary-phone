@@ -11,9 +11,10 @@ db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_
 cur = db.cursor()
 
 targets = {
-           "aps":      {"table":"aps", "column":"name", "convert":lambda x: x},
-           "contexts": {"table":"contexts","column":"name", "convert":lambda x: x},
-           "devices":  {"table":"devices","column":"identifier","convert":lambda x: helpers.Device(x).fqdn}
+           "aps":      {"table":"aps", "column":"name", "where":"1", "convert":lambda x: x},
+           "owrtaps":  {"table":"aps", "column":"name", "where":"model = 'wr841n'", "convert":lambda x: x},
+           "contexts": {"table":"contexts","column":"name", "where":"1", "convert":lambda x: x},
+           "devices":  {"table":"devices","column":"identifier", "where":"1" ,"convert":lambda x: helpers.Device(x).fqdn}
           }
 
 if len(sys.argv) != 2:
@@ -25,8 +26,10 @@ if target not in targets:
    print("unknown target")
    exit(1)
 
-cur.execute("SELECT "+targets[target]["column"]+" FROM "+targets[target]["table"])
+cur.execute("SELECT "+targets[target]["column"]+" FROM "+targets[target]["table"]+" WHERE "+targets[target]["where"])
 results = cur.fetchall()
 
 for result in results:
-    print(targets[target]["convert"](result[0]))
+    result = targets[target]["convert"](result[0])
+    if result is not None:
+        print(result)
