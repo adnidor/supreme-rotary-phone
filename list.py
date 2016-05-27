@@ -11,10 +11,11 @@ db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_
 cur = db.cursor()
 
 targets = {
-           "aps":      {"table":"aps", "column":"name", "where":"1", "convert":lambda x: x},
-           "owrtaps":  {"table":"aps", "column":"name", "where":"model = 'wr841n'", "convert":lambda x: x},
-           "contexts": {"table":"contexts","column":"name", "where":"1", "convert":lambda x: x},
-           "devices":  {"table":"devices","column":"identifier", "where":"1" ,"convert":lambda x: helpers.Device(x).fqdn}
+           "aps":           {"table":"aps", "column":"name", "where":"1", "convert":lambda x: x},
+           "owrtaps":       {"table":"aps", "column":"name", "where":"model = 'wr841n'", "convert":lambda x: x},
+           "contexts":      {"table":"contexts","column":"name", "where":"1", "convert":lambda x: x},
+           "identifiers":   {"table":"devices","column":"identifier", "where":"1", "convert":lambda x: x},
+           "devices":       {"table":"devices","column":"identifier", "where":"1" ,"convert":lambda x: helpers.Device(x).fqdn}
           }
 
 if len(sys.argv) != 2:
