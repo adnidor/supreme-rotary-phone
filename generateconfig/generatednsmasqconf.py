@@ -17,9 +17,8 @@ cur = db.cursor()
 contexts = helpers.get_all_contexts()
 
 for context in contexts:
-    cur.execute("SELECT identifier, ip, description, hostname FROM devices WHERE context='"+context.name+"' AND type='dhcp' ORDER BY INET_ATON(ip)")
-    results = cur.fetchall()
-    if len(results) is 0 and not context.dhcp:
+    devices = helpers.get_devices_where("context=%s AND type = 'dhcp'",(context.id,))
+    if len(devices) is 0 and not context.dhcp:
         continue
     print()
     print("#"+context.description)
@@ -32,11 +31,7 @@ for context in contexts:
     
         print("dhcp-range="+first_host+","+last_host+",12h")
 
-    for row in results:
-        mac = row[0]
-        ip = row[1]
-        description = row[2]
-        hostname = row[3]
-        print("dhcp-host="+mac+","+ip+" #"+description+" ("+hostname+")")
+    for device in devices:
+        print("dhcp-host="+device.identifier+","+device.ip+" #"+device.description+" ("+device.hostname+")")
 
 

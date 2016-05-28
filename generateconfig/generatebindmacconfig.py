@@ -6,11 +6,9 @@ path = os.path.abspath(os.path.realpath(__file__)+"/../..")
 sys.path.append(path)
 sys.path.append("/etc/networkmanagement")
 import server_config
+import helpers
 
 now = datetime.datetime.now()
-
-db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-cur = db.cursor()
 
 DOMAIN=server_config.domain+"."
 EMAIL=server_config.email
@@ -30,14 +28,9 @@ def print_header(suffix):
     print("@       IN      NS      ns.intern.yannikenss.de.")
 
 
-cur.execute("SELECT identifier, ip, hostname, context FROM devices WHERE type='dhcp' OR type='static'")
-
+devices = helpers.get_devices_where("type = 'static' OR type = 'dhcp'")
 print_header("mac."+DOMAIN)
-for row in cur.fetchall():
-    mac = row[0]
-    ip = row[1]
-    hostname = row[2]
-    context = row[3]
-    print(mac.replace(":",".")+" IN A "+ip)
-    print(mac.replace(":",".")+" IN TXT \""+hostname+"."+context+"."+DOMAIN+"\"")
+for device in devices:
+    print(device.identifier.replace(":",".")+" IN A "+device.ip)
+    print(device.identifier.replace(":",".")+" IN TXT \""+device.fqdn+".\"")
 

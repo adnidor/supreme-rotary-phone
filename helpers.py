@@ -48,6 +48,12 @@ class Context:
     def __hash__(self):
         return self.id
 
+    def get_devices(self):
+        return get_devices_where("context = %s",(str(self.id),))
+
+    def is_root(self):
+        return self.name == "root"
+
 class Device:
     def __init__(self, identifier):
         if identifier is None:
@@ -153,7 +159,7 @@ def get_devices_where(statement,vars=None):
     return sorted(devices, key=Device.get_key)
 
 def get_all_devices():
-    return get_devices_where("1=1")
+    return get_devices_where("1")
 
 def get_contexts_where(statement,vars=None):
     db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
@@ -170,7 +176,7 @@ def get_contexts_where(statement,vars=None):
     return contexts
 
 def get_all_contexts():
-    return get_contexts_where("1=1")
+    return get_contexts_where("1")
         
 def get_secs_since_update():
     file = open("/etc/networkmanagement/last_update")
