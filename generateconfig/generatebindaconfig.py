@@ -33,7 +33,7 @@ def print_header(suffix):
     print("                        1h )            ; Negative caching TTL of 1 day")
     print("@       IN      NS      ns.intern.yannikenss.de.")
 
-cur.execute("SELECT ip, hostname, devices.description, identifier, altname FROM devices JOIN contexts ON contexts.id = devices.context WHERE contexts.name='"+context+"' ORDER BY INET_ATON(ip)")
+cur.execute("SELECT ip, hostname, devices.description, identifier, altname FROM devices JOIN contexts ON contexts.i = devices.context WHERE contexts.name='"+context+"' ORDER BY INET_ATON(ip)")
 
 if context == "root":
     prefix = ""
