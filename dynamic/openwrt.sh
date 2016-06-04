@@ -3,13 +3,26 @@ basepath="$(dirname "$(dirname "$(readlink -f "$0")")")"
 mkdir -p "$basepath/tmp"
 for ap in $("$basepath/list.py" "aps")
 do
-	"$basepath/generateconfig/generateowrtwireless.py" "$ap" > "$basepath/tmp/$ap.wireless"
-	"$basepath/generateconfig/generateowrtnetwork.py" "$ap" > "$basepath/tmp/$ap.network"
+	"$basepath/generateconfig/generateowrtwireless.py" "$ap" > "$basepath/tmp/$ap.wireless.new"
+	"$basepath/generateconfig/generateowrtnetwork.py" "$ap" > "$basepath/tmp/$ap.network.new"
     ip="$("$basepath/getapip.py" "$ap")"
-    scp -q "$basepath/tmp/$ap.wireless" root@$ip:/etc/config/wireless
-    scp -q "$basepath/tmp/$ap.network" root@$ip:/etc/config/network
-    ssh root@$ip 'uci commit network; uci commit wireless; wifi'
-    rm "$basepath/tmp/$ap.network"
-    rm "$basepath/tmp/$ap.wireless"
+    diff "$basepath/tmp/$ap.wireless.new" "$basepath/tmp/$ap.wireless" > /dev/null
+    dirty=0
+    if [ $? -eq 1 ]
+    then
+        scp -q "$basepath/tmp/$ap.wireless.new" root@$ip:/etc/config/wireless
+        mv "$basepath/tmp/$ap.wireless.new" "$basepath/tmp/$ap.wireless"  
+        dirty=1
+    fi
+    diff "$basepath/tmp/$ap.wireless.new" "$basepath/tmp/$ap.wireless" > /dev/null
+    if [ $? -eq 1 ]
+    then
+        scp -q "$basepath/tmp/$ap.network.new" root@$ip:/etc/config/network
+        mv "$basepath/tmp/$ap.network.new" "$basepath/tmp/$ap.network"  
+        dirty=1
+    fi
+    if [ $dirty -eq 1 ]; then
+        ssh root@$ip 'uci commit network; uci commit wireless; wifi'
+    fi
 done
 
