@@ -14,7 +14,7 @@ do
         mv "$basepath/tmp/$ap.wireless.new" "$basepath/tmp/$ap.wireless"  
         dirty=1
     fi
-    diff "$basepath/tmp/$ap.wireless.new" "$basepath/tmp/$ap.wireless" > /dev/null
+    diff "$basepath/tmp/$ap.network.new" "$basepath/tmp/$ap.network" > /dev/null
     if [ $? -ne 0 ]
     then
         scp -q "$basepath/tmp/$ap.network.new" root@$ip:/etc/config/network
