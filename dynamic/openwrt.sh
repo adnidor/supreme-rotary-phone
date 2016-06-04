@@ -8,14 +8,14 @@ do
     ip="$("$basepath/getapip.py" "$ap")"
     diff "$basepath/tmp/$ap.wireless.new" "$basepath/tmp/$ap.wireless" > /dev/null
     dirty=0
-    if [ $? -eq 1 ]
+    if [ $? -ne 0 ]
     then
         scp -q "$basepath/tmp/$ap.wireless.new" root@$ip:/etc/config/wireless
         mv "$basepath/tmp/$ap.wireless.new" "$basepath/tmp/$ap.wireless"  
         dirty=1
     fi
     diff "$basepath/tmp/$ap.wireless.new" "$basepath/tmp/$ap.wireless" > /dev/null
-    if [ $? -eq 1 ]
+    if [ $? -ne 0 ]
     then
         scp -q "$basepath/tmp/$ap.network.new" root@$ip:/etc/config/network
         mv "$basepath/tmp/$ap.network.new" "$basepath/tmp/$ap.network"  
