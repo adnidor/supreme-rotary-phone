@@ -23,7 +23,7 @@ def get_link_details(device):
 contexts = helpers.get_all_contexts()
 devices = {}
 for context in contexts:
-    devices[context] = helpers.get_devices_where("context = %s", (context.name,))
+    devices[context] = context.get_devices()
 
 print("<html><head>")
 print("<title>Geräte</title>")
