@@ -6,8 +6,8 @@ do
 	"$basepath/generateconfig/generateowrtwireless.py" "$ap" > "$basepath/tmp/$ap.wireless.new"
 	"$basepath/generateconfig/generateowrtnetwork.py" "$ap" > "$basepath/tmp/$ap.network.new"
     ip="$("$basepath/getapip.py" "$ap")"
-    diff "$basepath/tmp/$ap.wireless.new" "$basepath/tmp/$ap.wireless" > /dev/null
     dirty=0
+    diff "$basepath/tmp/$ap.wireless.new" "$basepath/tmp/$ap.wireless" > /dev/null
     if [ $? -ne 0 ]
     then
         scp -q "$basepath/tmp/$ap.wireless.new" root@$ip:/etc/config/wireless
