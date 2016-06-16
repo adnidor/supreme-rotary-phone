@@ -43,10 +43,12 @@ print("<br />")
 print("<form action=search_device.cgi>")
 print("<input type=text name=q /><input type=submit value='Suchen'/>")
 print("</form>")
+if not os.path.exists("custom"):
+    os.makedirs("custom")
 cscripts = os.listdir("custom")
 if len(cscripts) > 0:
     print("Custom Scripts:")
     print("<br />")
     for script in cscripts:
-        print("<a href='"+script+"'>"+script+"</a><br />")
+        print("<a href='custom/"+script+"'>"+script+"</a><br />")
 print("</body></html>")
