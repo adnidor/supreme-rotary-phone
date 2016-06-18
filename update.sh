@@ -8,7 +8,7 @@ fi
 logger -t srp "starting update..."
 basepath="$(dirname "$(readlink -f "$0")")"
 logger -t srp "basepath: $basepath"
-for file in $basepath/dynamic/*
+for file in $basepath/dynamic/enabled/*
 do  
     logger -t srp "executing $file"
     $file
