@@ -29,7 +29,7 @@ print("<h1>Index</h1>")
 print("User: "+str(common_name)+", authenticated: "+auth+", authorized: "+authorized)
 print("<br />")
 secs_since_update = helpers.get_secs_since_update()
-mins_since_update = secs_since_update / 60
+mins_since_update = int(secs_since_update / 60)
 print(str(secs_since_update)+" seconds ("+str(mins_since_update)+" minutes) since last update <a href=update.cgi>Update now</a>")
 print("<br />")
 print("<br />")
@@ -50,5 +50,6 @@ if len(cscripts) > 0:
     print("Custom Scripts:")
     print("<br />")
     for script in cscripts:
-        print("<a href='custom/"+script+"'>"+script+"</a><br />")
+        if not script.startswith("."):
+            print("<a href='custom/"+script+"'>"+script+"</a><br />")
 print("</body></html>")
