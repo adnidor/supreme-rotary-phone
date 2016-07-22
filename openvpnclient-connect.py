@@ -46,6 +46,6 @@ tmp_file.write("ifconfig-push "+results[0].ip+" 255.255.255.0\n")
 tmp_file.close()
 
 try:
-    exit(call("/etc/openvpn/proxyarp-connect.sh"))
+    exit(call(["/etc/openvpn/proxyarp-connect.sh", results[0].ip]))
 except FileNotFoundError:
     pass
