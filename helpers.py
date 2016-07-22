@@ -56,6 +56,12 @@ class Context:
     def is_root(self):
         return self.parent is None
 
+    def get_domain_part(self):
+        if self.is_root():
+            return ""
+        else:
+            return "."+self.name+self.parent.get_domain_part()
+
 class Device:
     def __init__(self, identifier):
         if identifier is None:
@@ -120,11 +126,7 @@ class Device:
         return (self.identifier == other.identifier)
 
     def get_fqdn(self):
-        if self.context.is_root():
-            contextstr = "."
-        else:
-            contextstr = "."+self.context.name+"."
-        return self.hostname+contextstr+DOMAIN
+        return self.hostname+self.context.get_domain_part()+"."+DOMAIN
 
     def get_key(x):
         return struct.unpack("!I", socket.inet_aton(x.ip))[0] #IP as number
