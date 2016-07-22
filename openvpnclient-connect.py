@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import mysql.connector as ms
 import ipaddress as ipa
 import socket, struct
 import sys,os
@@ -27,11 +26,9 @@ syslog.syslog("CN: "+str(common_name))
 syslog.syslog("Config: "+str(config_file))
 syslog.syslog("Port: "+str(port))
 
-db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-cur = db.cursor()
-
 cur.execute("SELECT ip,ports FROM devices WHERE connection='openvpn' AND identifier=%s", (common_name,))
 results = cur.fetchall()
+results = get_devices_where("connection='openvpn' AND identifier=%s", (common_name,))
 if len(results) == 0:
     print("CN not found")
     syslog.syslog("CN not found")
@@ -41,11 +38,11 @@ elif len(results) > 1:
     syslog.syslog("multiple devices found")
     exit(1)
 
-if results[0][1] != port:
+if results[0].portraw != port:
     syslog.syslog("wrong network")
     exit(1)
-syslog.syslog("IP: "+results[0][0])
-tmp_file.write("ifconfig-push "+results[0][0]+" 255.255.255.0\n")
+syslog.syslog("IP: "+results[0].ip)
+tmp_file.write("ifconfig-push "+results[0].ip+" 255.255.255.0\n")
 tmp_file.close()
 
 try:

@@ -16,7 +16,7 @@ class Context:
             self.name = name
             db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
             cur = db.cursor()
-            cur.execute("SELECT i,iprange,description,dhcp FROM contexts WHERE name = %s", (name,))
+            cur.execute("SELECT i,iprange,description,dhcp,parent FROM contexts WHERE name = %s", (name,))
             result = cur.fetchone()
             if result is None:
                 raise KeyError("Context not found")
@@ -24,11 +24,12 @@ class Context:
             self.iprange = result[1]
             self.description = result[2]
             self.dhcp = True if result[3] == 1 else False
+            self.parent = None if result[4] is None else Context(id=result[4])
         elif id is not None:
             self.id = id
             db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
             cur = db.cursor()
-            cur.execute("SELECT name,iprange,description,dhcp FROM contexts WHERE i = %s", (id,))
+            cur.execute("SELECT name,iprange,description,dhcp,parent FROM contexts WHERE i = %s", (id,))
             result = cur.fetchone()
             if result is None:
                 raise KeyError("Context not found")
@@ -36,6 +37,7 @@ class Context:
             self.iprange = result[1]
             self.description = result[2]
             self.dhcp = True if result[3] == 1 else False
+            self.parent = None if result[4] is None else Context(id=result[4])
     def __repr__(self):
         return "<Context "+str(self.id)+">"
 
@@ -52,7 +54,7 @@ class Context:
         return get_devices_where("context = %s",(str(self.id),))
 
     def is_root(self):
-        return self.name == "root"
+        return self.parent is None
 
 class Device:
     def __init__(self, identifier):
@@ -92,6 +94,7 @@ class Device:
         self.devicetype_str = result[8]
         self.ports = result[9].split(",") if self.connection == "wifi" else []
         self.port = result[9].split("/") if self.connection == "ethernet" else ['']
+        self.portraw = result[9]
         self.port_str = ""
         if self.ports == ['']:
             self.ports = []
@@ -117,14 +120,14 @@ class Device:
         return (self.identifier == other.identifier)
 
     def get_fqdn(self):
-        if self.context.name == "root":
+        if self.context.is_root():
             contextstr = "."
         else:
             contextstr = "."+self.context.name+"."
         return self.hostname+contextstr+DOMAIN
 
     def get_key(x):
-        return struct.unpack("!I", socket.inet_aton(x.ip))[0]
+        return struct.unpack("!I", socket.inet_aton(x.ip))[0] #IP as number
 
     def write_to_db(self):
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
@@ -197,6 +200,9 @@ def strip_end(text, suffix):
         return text
     return text[:len(text)-len(suffix)]
 
+def get_root_context():
+    return get_contexts_where("parent IS NULL")[0]
+
 def get_device_from_fqdn(fqdn):
     if not fqdn.endswith(DOMAIN):
         return None
@@ -212,7 +218,7 @@ def get_device_from_fqdn(fqdn):
             host = strip_end(hostcntxt,"."+devcontext.name)
             break
     if devcontext is None:
-        devcontext = Context(name="root")
+        devcontext = get_root_context()
         host = strip_end(hostcntxt, ".")
     cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s) AND context = %s",(host,host,devcontext.id))
     results = cur.fetchall()

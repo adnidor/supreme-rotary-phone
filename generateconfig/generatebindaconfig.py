@@ -36,7 +36,7 @@ def print_header(suffix):
 
 devices = context.get_devices()
 
-if context.name == "root":
+if context.is_root():
     prefix = ""
 else:
     prefix = context.name+"."
