@@ -73,6 +73,9 @@ for wifi in wifis:
     elif authmethod == "passphrase":
         print("    option encryption 'psk2'")
         print("    option key '"+passphrase+"'")
+    elif authmethod == "wep":
+        print("    option encryption 'wep'")
+        print("    option key '"+passphrase+"'")
     if whitelist:
         for device in devices:
             name = device[0]
