@@ -2,38 +2,32 @@
 #coding=utf-8
 import mysql.connector as ms
 import ipaddress as ipa
-from importlib.machinery import SourceFileLoader
-
-server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
-
+import sys,os
+path = os.path.abspath(os.path.realpath(__file__)+"/../..")
+sys.path.append(path)
+sys.path.append("/etc/networkmanagement")
+import server_config
+import helpers
 
 print("#DO NOT TOUCH - This file is generated automagically")
 
 DOMAIN = server_config.domain+"."
 
-db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-cur = db.cursor()
-
-cur.execute("SELECT name,iprange FROM contexts")
-contexts = cur.fetchall()
+contexts = helpers.get_all_contexts()
 
 for context in contexts:
-    contextstr = context[0]
-    if contextstr == "root":
-        contextstring = ""
-    else:
-        contextstring = contextstr+"."
-    network = ipa.ip_network(context[1])
+    network = ipa.ip_network(context.iprange)
     reverse_record = ".".join((".".join(str(network.network_address).split(".")[::-1])+'.in-addr.arpa').split(".")[1:]) #dark magic - do not touch
+    dp = context.get_domain_part()
     print()
-    print("zone \""+contextstring+DOMAIN+"\" {")
+    print("zone \""+dp[1:]+"."+DOMAIN+"\" {")
     print("type master;")
-    print("file \"/etc/bind/db."+contextstr+".forward\";")
+    print("file \"/etc/bind/"+context.get_zonefile_name("forward")+"\";")
     print("};")
     print()
     print("zone \""+reverse_record+"\" {")
     print("type master;")
-    print("file \"/etc/bind/db."+contextstr+".reverse\";")
+    print("file \"/etc/bind/"+context.get_zonefile_name("reverse")+"\";")
     print("};")
     print()
 

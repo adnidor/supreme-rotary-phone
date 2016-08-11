@@ -62,6 +62,12 @@ class Context:
         else:
             return "."+self.name+self.parent.get_domain_part()
 
+    def get_zonefile_name(self, suffix):
+        if self.is_root():
+            return "db.root."+suffix
+        else:
+            return "db"+self.get_domain_part()+"."+suffix
+
 class Device:
     def __init__(self, identifier):
         if identifier is None:
