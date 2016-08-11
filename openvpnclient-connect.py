@@ -26,8 +26,6 @@ syslog.syslog("CN: "+str(common_name))
 syslog.syslog("Config: "+str(config_file))
 syslog.syslog("Port: "+str(port))
 
-cur.execute("SELECT ip,ports FROM devices WHERE connection='openvpn' AND identifier=%s", (common_name,))
-results = cur.fetchall()
 results = get_devices_where("connection='openvpn' AND identifier=%s", (common_name,))
 if len(results) == 0:
     print("CN not found")
