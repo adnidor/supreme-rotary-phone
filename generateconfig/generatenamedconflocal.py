@@ -19,8 +19,9 @@ for context in contexts:
     network = ipa.ip_network(context.iprange)
     reverse_record = ".".join((".".join(str(network.network_address).split(".")[::-1])+'.in-addr.arpa').split(".")[1:]) #dark magic - do not touch
     dp = context.get_domain_part()
+    dp2 = dp+"." if dp != "" else ""
     print()
-    print("zone \""+dp[1:]+"."+DOMAIN+"\" {")
+    print("zone \""+dp2[1:]+DOMAIN+"\" {")
     print("type master;")
     print("file \"/etc/bind/"+context.get_zonefile_name("forward")+"\";")
     print("};")

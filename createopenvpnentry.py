@@ -15,7 +15,7 @@ if len(sys.argv) != 2:
     exit(1)
 identifier = sys.argv[1]
 
-device = Device(identifier)
+device = helpers.Device(identifier)
 new_hostname = device.hostname+"."+device.context.name
 cur.execute("SELECT INET_ATON(ip) from devices WHERE context = 'vpn' ORDER BY INET_ATON(ip) DESC Limit 1")
 new_ip = str(ipaddress.ip_address(cur.fetchone()[0]+1))
