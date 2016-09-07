@@ -71,7 +71,7 @@ print("</table>")
 print("<h2>Access Points</h2>")
 print("<table><tr><th>Name</th><th>Kanal</th><th>Model</th><th>Wlanstatus</th></tr>")
 for ap in aps:
-    wifi_status = "An" if ap.enabled else "Aus"
+    wifi_status = "Aktiviert" if ap.wifi_enabled else "Deaktiviert"
     print("<tr>")
     print("<td>%s</td>"%(ap.name,))
     print("<td>%s</td>"%(str(ap.channel),))
