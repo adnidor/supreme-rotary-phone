@@ -14,6 +14,7 @@ targets = {
            "aps":           {"table":"aps", "column":"name", "where":"1", "convert":lambda x: x},
            "owrtaps":       {"table":"aps", "column":"name", "where":"model = 'wr841n'", "convert":lambda x: x},
            "contexts":      {"table":"contexts","column":"name", "where":"1", "convert":lambda x: x},
+           "contextids":    {"table":"contexts","column":"i", "where":"1", "convert":lambda x: x},
            "identifiers":   {"table":"devices","column":"identifier", "where":"1", "convert":lambda x: x},
            "devices":       {"table":"devices","column":"identifier", "where":"1" ,"convert":lambda x: helpers.Device(x).fqdn}
           }

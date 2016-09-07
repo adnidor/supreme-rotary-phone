@@ -12,7 +12,7 @@ import helpers
 if len(sys.argv) != 2:
     print("usage: "+sys.argv[0]+" <context>")
     exit(1)
-context = helpers.Context(name=sys.argv[1]) #erster Parameter
+context = helpers.Context(id=sys.argv[1]) #erster Parameter
 
 DOMAIN=server_config.domain+"."
 EMAIL=server_config.email

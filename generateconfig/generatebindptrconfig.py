@@ -11,7 +11,7 @@ import helpers
 
 now = datetime.datetime.now()
 
-context = helpers.Context(name=sys.argv[1]) #erster Parameter
+context = helpers.Context(id=sys.argv[1]) #erster Parameter
 network = ipa.ip_network(context.iprange)
 
 DOMAIN=server_config.domain+"."
