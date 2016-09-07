@@ -47,6 +47,10 @@ if device.connection == "wifi":
     for port in device.ports_str:
         print("<li>"+port+"</li>")
     print("</ul></td>")
+else:
+    print("<tr><td>Port:</td><td>"+device.portraw+"</td></tr>")
+internet = "Yes" if device.internet else "No"
+print("<tr><td>Internet:</td><td>"+internet+"</td></tr>")
 
 print("</table>")
 

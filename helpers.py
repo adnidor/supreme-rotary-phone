@@ -85,7 +85,8 @@ class Device:
                     devices.devicetype,
                     devices.connection,
                     devicetypes.name,
-                    devices.ports
+                    devices.ports,
+                    devices.internet
                  FROM devices 
                     LEFT JOIN devicetypes ON devicetypes.number = devices.devicetype
                  WHERE
@@ -107,6 +108,7 @@ class Device:
         self.ports = result[9].split(",") if self.connection == "wifi" else []
         self.port = result[9].split("/") if self.connection == "ethernet" else ['']
         self.portraw = result[9]
+        self.internet = True if result[10] == 1 else False
         self.port_str = ""
         if self.ports == ['']:
             self.ports = []
