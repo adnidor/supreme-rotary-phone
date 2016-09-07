@@ -27,7 +27,7 @@ for context in contexts:
     if context.dhcp:
         print("dhcp-range="+first_host+","+last_host+",1h")
     else:
-        print("dhcp-range="+first_host+","+last_host+",static,1h")
+        print("dhcp-range="+naddr+",static,1h")
 
     for device in devices:
         tag = "internet" if device.internet else "nointernet"
