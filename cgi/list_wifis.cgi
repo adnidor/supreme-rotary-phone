@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 #coding=utf-8
-import mysql.connector as ms
 import ipaddress as ipa
 import socket, struct
 import sys,os
@@ -17,16 +16,9 @@ cgitb.enable()
 print("Content-type: text/html; charset=UTF-8")
 print()
 
-db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-cur = db.cursor()
-
-cur.execute("SELECT id, name, channel, model FROM aps")
-aps = cur.fetchall()
-
-cur.execute("SELECT aps,ssid, authmethod, vlans.name, hidden, mode, whitelist FROM wifis LEFT JOIN vlans ON wifis.vlan = vlans.id")
-wifis = cur.fetchall()
-
-devices = helpers.get_devices_where("connection = 'wifi'")
+aps = helpers.AccessPoint.get_all()
+wifis = helpers.WifiNetwork.get_all()
+devices = helpers.Device.get_where("connection = 'wifi'")
 
 common_name = os.getenv("SSL_CLIENT_S_DN_CN")
 authorized = helpers.is_user_authorized(common_name)
@@ -44,39 +36,28 @@ print("</style>")
 print("</head><body>")
 print("<h1>WLAN</h1>")
 
-
-def get_ap_name(apid):
-    cur.execute("SELECT name FROM aps WHERE id = %s", (apid,))
-    return cur.fetchone()[0]
-
 print("<h2>Netzwerke</h2>")
 print("<table>")
 print("<tr><th>SSID</th><th>VLAN</th><th>Access Control</th><th>Versteckt?</th><th>Modus</th><th>Access Points</th><th>Whitelist?</th></tr>")
 for wifi in wifis:
-    apids = wifi[0].split(",")
-    ssid = wifi[1]
-    encryption = wifi[2]
-    vlan = wifi[3] if wifi[3] is not None else "None"
-    hidden = "Ja" if wifi[4] == 1 else "Nein"
-    mode = wifi[5] 
-    whitelist = "Ja" if wifi[6] == 1 else "Nein"
+    vlan = wifi.vlan.name if wifi.vlan is not None else "None"
+    hidden = "Ja" if wifi.hidden else "Nein"
+    whitelist = "Ja" if wifi.whitelist else "Nein"
     #if encryption == "passphrase" and authorized:
     #    encryption += " ("+wifi[6]+")"
     print("<tr>")
-    print("<td>%s</td>"%(ssid,))
+    print("<td>%s</td>"%(wifi.ssid,))
     print("<td>%s</td>"%(vlan,))
-    print("<td>%s</td>"%(encryption,))
+    print("<td>%s</td>"%(wifi.authmethod,))
     print("<td>%s</td>"%(hidden,))
-    print("<td>%s</td>"%(mode,))
+    print("<td>%s</td>"%(wifi.mode,))
     print("<td>")
     print("<ul class=aplist>")
     for ap in aps:
-        id = ap[0]
-        name = ap[1]
-        if str(id) in apids:
-            print("<li><input type='checkbox' disabled checked />%s</li>"%name)
+        if ap in wifi.aps:
+            print("<li><input type='checkbox' disabled checked />%s</li>"%ap.name)
         else:
-            print("<li><input type='checkbox' disabled />%s</li>"%name)
+            print("<li><input type='checkbox' disabled />%s</li>"%ap.name)
     print("</ul>")
     print("<td>%s</td>"%(whitelist,))
     print("</td>")
@@ -86,14 +67,10 @@ print("</table>")
 print("<h2>Access Points</h2>")
 print("<table><tr><th>Name</th><th>Kanal</th><th>Model</th></tr>")
 for ap in aps:
-    id = ap[0]
-    name = ap[1]
-    channel = ap[2]
-    model = ap[3]
     print("<tr>")
-    print("<td>%s</td>"%(name,))
-    print("<td>%s</td>"%(str(channel),))
-    print("<td>%s</td>"%(model,))
+    print("<td>%s</td>"%(ap.name,))
+    print("<td>%s</td>"%(str(ap.channel),))
+    print("<td>%s</td>"%(ap.model,))
     print("</tr>")
 print("</table>")
 
