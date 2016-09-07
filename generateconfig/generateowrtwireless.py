@@ -52,7 +52,7 @@ for wifi in wifis:
         print("    option key '"+wifi.passphrase+"'")
     if wifi.whitelist:
         for device in devices:
-            if str(id) in device.ports:
+            if str(wifi.id) in device.ports:
                 print("    list maclist '"+device.identifier.strip()+"'")
         print("    option macfilter 'allow'")
     print()
