@@ -8,7 +8,15 @@ server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server
 
 DOMAIN=server_config.domain
 
-class Context:
+class EqualityMixin:
+    def __eq__(self, other):
+        return (isinstance(other, self.__class__)
+            and self.__dict__ == other.__dict__)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+class Context(EqualityMixin):
     def __init__(self, name=None, id=None):
         if name is None and id is None:
             return
@@ -68,7 +76,26 @@ class Context:
         else:
             return "db"+self.get_domain_part()+"."+suffix
 
-class Device:
+    @classmethod
+    def get_where(cls, statement,vars=None):
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = "SELECT i FROM contexts WHERE "+statement
+        if vars is None:
+            cur.execute(sql)
+        else:
+            cur.execute(sql,vars)
+        results = cur.fetchall()
+        contexts = []
+        for result in results:
+            contexts.append(cls(result[0]))
+        return contexts
+
+    @classmethod
+    def get_all(cls):
+        return cls.get_where("1")
+
+class Device(EqualityMixin):
     def __init__(self, identifier):
         if identifier is None:
             return
@@ -124,6 +151,25 @@ class Device:
             self.port_str = "Port %s auf %s"%(self.port[1],result)
         self.fqdn = self.get_fqdn()
 
+    @classmethod
+    def get_where(cls, statement,vars=None):
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = "SELECT identifier FROM devices WHERE "+statement
+        if vars is None:
+            cur.execute(sql)
+        else:
+            cur.execute(sql,vars)
+        results = cur.fetchall()
+        devices = []
+        for result in results:
+            devices.append(cls(result[0]))
+        return sorted(devices, key=Device.get_key)
+
+    @classmethod
+    def get_all(cls):
+        return cls.get_where("1")
+
     def __str__(self):
         return self.get_fqdn()
 
@@ -156,6 +202,161 @@ class Device:
 
     def __hash__(self):
         return hash(self.identifier)
+
+class WifiNetwork(EqualityMixin):
+    def __init__(self, id):
+        self.id = int(id)
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = """SELECT
+                    ssid,
+                    vlan,
+                    authmethod,
+                    aps,
+                    hidden,
+                    passphrase,
+                    mode,
+                    whitelist
+                 FROM wifis 
+                 WHERE
+                    id = %s
+              """
+        cur.execute(sql, (id,))
+        result = cur.fetchone()
+        if result is None:
+            raise KeyError("Network not found")
+        self.ssid = result[0]
+        self.vlan = Vlan(result[1]) if result[1] != 0 else None
+        self.authmethod = result[2]
+        self.aps = [AccessPoint(i) for i in result[3].split(",")]
+        self.hidden = True if result[4] == 1 else False
+        self.passphrase = result[5] if result[5] != "" else None
+        self.mode = result[6]
+        self.whitelist = True if result[7] else False
+
+    def __str__(self):
+        return self.ssid
+
+    def __repr__(self):
+        return "<WifiNetwork "+str(self.id)+">"
+
+    @classmethod
+    def get_where(cls, statement,vars=None):
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = "SELECT id FROM wifis WHERE "+statement
+        if vars is None:
+            cur.execute(sql)
+        else:
+            cur.execute(sql,vars)
+        results = cur.fetchall()
+        wifis = []
+        for result in results:
+            wifis.append(cls(result[0]))
+        return wifis
+
+    @classmethod
+    def get_all(cls):
+        return cls.get_where("1")
+
+class Vlan(EqualityMixin):
+    def __init__(self,id):
+        self.id = int(id)
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = """SELECT
+                    name
+                 FROM vlans 
+                 WHERE
+                    id = %s
+              """
+        cur.execute(sql, (id,))
+        result = cur.fetchone()
+        if result is None:
+            raise KeyError("Vlan not found")
+        self.name = result[0]
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return "<Vlan "+str(self.id)+">"
+
+    @classmethod
+    def get_where(cls, statement,vars=None):
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = "SELECT id FROM vlans WHERE "+statement
+        if vars is None:
+            cur.execute(sql)
+        else:
+            cur.execute(sql,vars)
+        results = cur.fetchall()
+        vlans = []
+        for result in results:
+            vlans.append(cls(result[0]))
+        return vlans
+
+    @classmethod
+    def get_all(cls):
+        return cls.get_where("1")
+
+class AccessPoint(EqualityMixin):
+    def __init__(self,id):
+        self.id = int(id)
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = """SELECT
+                    device,
+                    channel,
+                    radiussecret,
+                    radiusserver,
+                    name,
+                    vlans,
+                    mvlan,
+                    switch,
+                    model,
+                    interfaces
+                 FROM aps 
+                 WHERE
+                    id = %s
+              """
+        cur.execute(sql, (id,))
+        result = cur.fetchone()
+        if result is None:
+            raise KeyError("AP not found")
+        self.device = Device(result[0])
+        self.channel = result[1]
+        self.radiussecret = result[2]
+        self.radiusserver = result[3]
+        self.name = result[4]
+        self.vlans = [Vlan(i) for i in result[5].split(",")]
+        self.mvlan = Vlan(result[6])
+        self.switch = result[7]
+        self.model = result[8]
+        self.interfaces = result[9].split(",")
+
+    def __repr__(self):
+        return "<AccessPoint "+str(self.id)+">"
+
+    @classmethod
+    def get_where(cls, statement,vars=None):
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = "SELECT id FROM aps WHERE "+statement
+        if vars is None:
+            cur.execute(sql)
+        else:
+            cur.execute(sql,vars)
+        results = cur.fetchall()
+        aps = []
+        for result in results:
+            aps.append(cls(result[0]))
+        return aps
+
+    @classmethod
+    def get_all(cls):
+        return cls.get_where("1")
 
 def get_devices_where(statement,vars=None):
     db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
