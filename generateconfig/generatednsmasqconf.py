@@ -25,9 +25,9 @@ for context in contexts:
     last_host = socket.inet_ntoa(struct.pack("!L", struct.unpack("!L", socket.inet_aton(baddr))[0]-1))
 
     if context.dhcp:
-        print("dhcp-range="+first_host+","+last_host+",12h")
+        print("dhcp-range="+first_host+","+last_host+",1h")
     else:
-        print("dhcp-range="+first_host+","+last_host+",static")
+        print("dhcp-range="+first_host+","+last_host+",static,1h")
 
     for device in devices:
         tag = "internet" if device.internet else "nointernet"
