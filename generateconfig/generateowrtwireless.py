@@ -21,11 +21,14 @@ print("    option htmode 'HT40'")
 print("    option path '"+models.wireless_path[ap.model]+"'")
 print("    option country 'DE'")
 print("    option channel '"+str(ap.channel)+"'")
+if not ap.wifi_enabled:
+    print("    option disabled 1")
 print()
 
 wifis = helpers.WifiNetwork.get_all()
 
 devices = helpers.Device.get_where("connection ='wifi'")
+
 
 for wifi in wifis:
     if ap not in wifi.aps:
@@ -55,4 +58,6 @@ for wifi in wifis:
             if str(wifi.id) in device.ports:
                 print("    list maclist '"+device.identifier.strip()+"'")
         print("    option macfilter 'allow'")
+    if not wifi.enabled:
+        print("    option disabled 1")
     print()

@@ -32,6 +32,7 @@ print("tr:nth-child(even) { background-color: white; }")
 print("tr:nth-child(odd) { background-color: silver; }")
 print(".aplist { list-style: none; padding: 0; margin: 0; }")
 print(".netlist { margin: 0; }")
+print(".disabled { color: grey; }")
 print("</style>")
 print("</head><body>")
 print("<h1>WLAN</h1>")
@@ -45,7 +46,10 @@ for wifi in wifis:
     whitelist = "Ja" if wifi.whitelist else "Nein"
     #if encryption == "passphrase" and authorized:
     #    encryption += " ("+wifi[6]+")"
-    print("<tr>")
+    if wifi.enabled:
+        print("<tr>")
+    else:
+        print("<tr class=disabled>")
     print("<td>%s</td>"%(wifi.ssid,))
     print("<td>%s</td>"%(vlan,))
     print("<td>%s</td>"%(wifi.authmethod,))

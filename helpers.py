@@ -215,7 +215,8 @@ class WifiNetwork(EqualityMixin):
                     hidden,
                     passphrase,
                     mode,
-                    whitelist
+                    whitelist,
+                    enabled
                  FROM wifis 
                  WHERE
                     id = %s
@@ -231,7 +232,8 @@ class WifiNetwork(EqualityMixin):
         self.hidden = True if result[4] == 1 else False
         self.passphrase = result[5] if result[5] != "" else None
         self.mode = result[6]
-        self.whitelist = True if result[7] else False
+        self.whitelist = True if result[7] == 1 else False
+        self.enabled = True if result[8] == 1 else False
 
     def __str__(self):
         return self.ssid
@@ -315,7 +317,8 @@ class AccessPoint(EqualityMixin):
                     mvlan,
                     switch,
                     model,
-                    interfaces
+                    interfaces,
+                    wifi_enabled
                  FROM aps 
                  WHERE
                     id = %s
@@ -334,6 +337,7 @@ class AccessPoint(EqualityMixin):
         self.switch = result[7]
         self.model = result[8]
         self.interfaces = result[9].split(",")
+        self.wifi_enabled = True if result[10] == 1 else False
 
     def __repr__(self):
         return "<AccessPoint "+str(self.id)+">"
