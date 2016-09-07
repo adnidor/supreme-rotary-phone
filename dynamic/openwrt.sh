@@ -1,7 +1,7 @@
 #!/bin/bash
 basepath="$(dirname "$(dirname "$(readlink -f "$0")")")"
 mkdir -p "$basepath/tmp"
-for ap in $("$basepath/list.py" "aps")
+for ap in $("$basepath/list.py" "apids")
 do
 	"$basepath/generateconfig/generateowrtwireless.py" "$ap" > "$basepath/tmp/$ap.wireless.new"
 	"$basepath/generateconfig/generateowrtnetwork.py" "$ap" > "$basepath/tmp/$ap.network.new"
