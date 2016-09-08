@@ -41,6 +41,8 @@ if results[0].portraw != port:
     exit(1)
 syslog.syslog("IP: "+results[0].ip)
 tmp_file.write("ifconfig-push "+results[0].ip+" 255.255.255.0\n")
+if results[0].internet:
+    tmp_file.write("push \"redirect-gateway def1\"\n")
 tmp_file.close()
 
 try:
