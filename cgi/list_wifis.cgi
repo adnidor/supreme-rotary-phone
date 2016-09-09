@@ -38,6 +38,7 @@ print("</head><body>")
 print("<h1>WLAN</h1>")
 
 print("<h2>Netzwerke</h2>")
+print("<a href=show_wifi_passwords.cgi>Passwörter</a>")
 print("<table>")
 print("<tr><th>SSID</th><th>VLAN</th><th>Access Control</th><th>Versteckt?</th><th>Modus</th><th>Access Points</th><th>Whitelist?</th></tr>")
 for wifi in wifis:
