@@ -23,7 +23,7 @@ class Context(EqualityMixin):
             self.name = name
             db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
             cur = db.cursor()
-            cur.execute("SELECT i,iprange,description,dhcp,parent FROM contexts WHERE name = %s", (name,))
+            cur.execute("SELECT i,iprange,description,dhcp,parent,email FROM contexts WHERE name = %s", (name,))
             result = cur.fetchone()
             if result is None:
                 raise KeyError("Context not found")
@@ -32,11 +32,12 @@ class Context(EqualityMixin):
             self.description = result[2]
             self.dhcp = True if result[3] == 1 else False
             self.parent = None if result[4] is None else Context(id=result[4])
+            self.email = result[5]
         elif id is not None:
             self.id = id
             db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
             cur = db.cursor()
-            cur.execute("SELECT name,iprange,description,dhcp,parent FROM contexts WHERE i = %s", (id,))
+            cur.execute("SELECT name,iprange,description,dhcp,parent,email FROM contexts WHERE i = %s", (id,))
             result = cur.fetchone()
             if result is None:
                 raise KeyError("Context not found")
@@ -45,6 +46,7 @@ class Context(EqualityMixin):
             self.description = result[2]
             self.dhcp = True if result[3] == 1 else False
             self.parent = None if result[4] is None else Context(id=result[4])
+            self.email = result[5]
     def __repr__(self):
         return "<Context "+str(self.id)+">"
 
