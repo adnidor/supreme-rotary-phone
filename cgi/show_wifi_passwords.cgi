@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 #coding=utf-8
-import ipaddress as ipa
-import socket, struct
 import sys,os
 import ipaddress
 path = os.path.abspath(os.path.realpath(__file__)+"/../..")
@@ -18,14 +16,11 @@ print()
 
 wifis = helpers.WifiNetwork.get_where("authmethod = 'passphrase' OR authmethod = 'wep'")
 
-common_name = os.getenv("SSL_CLIENT_S_DN_CN")
-authorized = helpers.is_user_authorized(common_name)
-
 print("<html><head>")
 print("<title>WLAN-Passwörter</title>")
 print("<style>")
 print("th,td { border: 1px solid; }")
-print("table { border-collapse: collapse; font-size: 150%; }")
+print("table { border-collapse: collapse; }")
 print("th { background-color: silver; }")
 print(".aplist { list-style: none; padding: 0; margin: 0; }")
 print(".netlist { margin: 0; }")
@@ -33,6 +28,7 @@ print(".disabled { color: grey; }")
 print("td.pw {")
 print("    font-weight: bold;")
 print("    font-family: monospace;")
+print("    font-size: large;")
 print("}")
 print("td {")
 print("    padding: 2px;")
