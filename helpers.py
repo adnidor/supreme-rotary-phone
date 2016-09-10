@@ -34,7 +34,7 @@ class Context(EqualityMixin):
             self.parent = None if result[4] is None else Context(id=result[4])
             self.email = result[5]
         elif id is not None:
-            self.id = id
+            self.id = int(id)
             db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
             cur = db.cursor()
             cur.execute("SELECT name,iprange,description,dhcp,parent,email FROM contexts WHERE i = %s", (id,))
@@ -89,12 +89,19 @@ class Context(EqualityMixin):
         results = cur.fetchall()
         contexts = []
         for result in results:
-            contexts.append(cls(result[0]))
+            contexts.append(cls(id=result[0]))
         return contexts
 
     @classmethod
     def get_all(cls):
         return cls.get_where("1")
+
+    def __contains__(self,other):
+        if type(other) is Device:
+            return other.context == self
+        elif type(other) is str:
+            result = Device.get_where("context = %s AND identifier = %s",(str(self.id), other,))
+            return len(result) == 1
 
 class Device(EqualityMixin):
     def __init__(self, identifier):
