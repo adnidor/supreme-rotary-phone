@@ -38,7 +38,6 @@ print("</head><body>")
 print("<h1>WLAN</h1>")
 
 print("<h2>Netzwerke</h2>")
-print("<a href=show_wifi_passwords.cgi>Passwörter</a>")
 print("<table>")
 print("<tr><th>SSID</th><th>VLAN</th><th>Access Control</th><th>Versteckt?</th><th>Modus</th><th>Access Points</th><th>Whitelist?</th></tr>")
 for wifi in wifis:
@@ -68,6 +67,7 @@ for wifi in wifis:
     print("</td>")
     print("</tr>")
 print("</table>")
+print("<a href=show_wifi_passwords.cgi>show passwords</a>")
 
 print("<h2>Access Points</h2>")
 print("<table><tr><th>ID</th><th>Name</th><th>Kanal</th><th>Model</th><th>Wlanstatus</th></tr>")
