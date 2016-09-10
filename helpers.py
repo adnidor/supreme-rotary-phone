@@ -96,6 +96,10 @@ class Context(EqualityMixin):
     def get_all(cls):
         return cls.get_where("1")
 
+    @classmethod
+    def get_root(cls):
+        return cls.get_where("parent IS NULL")[0]
+
     def __contains__(self,other):
         if type(other) is Device:
             return other.context == self
@@ -119,11 +123,9 @@ class Device(EqualityMixin):
                     devices.type,
                     devices.devicetype,
                     devices.connection,
-                    devicetypes.name,
                     devices.ports,
                     devices.internet
                  FROM devices 
-                    LEFT JOIN devicetypes ON devicetypes.number = devices.devicetype
                  WHERE
                     identifier = %s
               """
@@ -137,13 +139,12 @@ class Device(EqualityMixin):
         self.altname = result[3]
         self.description = result[4]
         self.type = result[5]
-        self.devicetype = result[6]
+        self.devicetype = DeviceType(result[6])
         self.connection = result[7]
-        self.devicetype_str = result[8]
-        self.ports = result[9].split(",") if self.connection == "wifi" else []
-        self.port = result[9].split("/") if self.connection == "ethernet" else ['']
-        self.portraw = result[9]
-        self.internet = True if result[10] == 1 else False
+        self.ports = result[8].split(",") if self.connection == "wifi" else []
+        self.port = result[8].split("/") if self.connection == "ethernet" else ['']
+        self.portraw = result[8]
+        self.internet = True if result[9] == 1 else False
         self.port_str = ""
         if self.ports == ['']:
             self.ports = []
@@ -306,6 +307,52 @@ class Vlan(EqualityMixin):
         for result in results:
             vlans.append(cls(result[0]))
         return vlans
+
+    @classmethod
+    def get_all(cls):
+        return cls.get_where("1")
+
+class DeviceType(EqualityMixin):
+    def __init__(self,id):
+        self.id = int(id)
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = """SELECT
+                    name,
+                    os,
+                    platform
+                 FROM devicetypes 
+                 WHERE
+                    number = %s
+              """
+        cur.execute(sql, (id,))
+        result = cur.fetchone()
+        if result is None:
+            raise KeyError("DeviceType not found")
+        self.name = result[0]
+        self.os = result[1]
+        self.platform = result[2]
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return "<DeviceType "+str(self.id)+">"
+
+    @classmethod
+    def get_where(cls, statement,vars=None):
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = "SELECT number FROM devicetypes WHERE "+statement
+        if vars is None:
+            cur.execute(sql)
+        else:
+            cur.execute(sql,vars)
+        results = cur.fetchall()
+        devtypes = []
+        for result in results:
+            devtypes.append(cls(result[0]))
+        return devtypes
 
     @classmethod
     def get_all(cls):

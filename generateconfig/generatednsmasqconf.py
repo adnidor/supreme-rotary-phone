@@ -10,10 +10,10 @@ import server_config
 
 print("#DO NOT EDIT - This file was generated automatically from an MySQL-Database")
 
-contexts = helpers.get_all_contexts()
+contexts = helpers.Context.get_all()
 
 for context in contexts:
-    devices = helpers.get_devices_where("context=%s AND type = 'dhcp'",(context.id,))
+    devices = helpers.Device.get_where("context=%s AND type = 'dhcp'",(context.id,))
     if len(devices) is 0 and not context.dhcp:
         continue
     print()

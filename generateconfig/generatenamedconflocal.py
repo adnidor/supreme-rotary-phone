@@ -13,7 +13,7 @@ print("#DO NOT TOUCH - This file is generated automagically")
 
 DOMAIN = server_config.domain+"."
 
-contexts = helpers.get_all_contexts()
+contexts = helpers.Context.get_all()
 
 for context in contexts:
     network = ipa.ip_network(context.iprange)

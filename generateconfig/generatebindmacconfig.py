@@ -28,7 +28,7 @@ def print_header(suffix):
     print("@       IN      NS      ns.intern.yannikenss.de.")
 
 
-devices = helpers.get_devices_where("type = 'static' OR type = 'dhcp'")
+devices = helpers.Device.get_where("type = 'static' OR type = 'dhcp'")
 print_header("mac."+DOMAIN)
 for device in devices:
     print(device.identifier.replace(":",".")+" IN A "+device.ip)

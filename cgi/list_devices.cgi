@@ -20,7 +20,7 @@ def get_link_edit(device):
 def get_link_details(device):
     return "<a href=show_device.cgi?device="+device+">Details</a>"
 
-contexts = helpers.get_all_contexts()
+contexts = helpers.Context.get_all()
 devices = {}
 for context in contexts:
     devices[context] = context.get_devices()

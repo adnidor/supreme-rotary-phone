@@ -12,10 +12,10 @@ import helpers
 print("====== Geräte ======")
 print("DO NOT EDIT - This file is generated automatically")
 
-contexts = helpers.get_all_contexts()
+contexts = helpers.Context.get_all()
 
 for context in contexts:
-    devices = helpers.get_devices_where("context = %s",(context.name,))
+    devices = context.get_devices()
     print("====="+context.description+"=====")
     if len(devices) is 0:
         print("No devices in this context.")

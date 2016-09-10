@@ -1,10 +1,5 @@
 #!/usr/bin/python3
-import mysql.connector as ms
-import ipaddress as ipa
-import socket, struct
 import sys,os
-import ipaddress
-import subprocess
 path = os.path.abspath(os.path.realpath(__file__)+"/../..")
 sys.path.append(path)
 sys.path.append("/etc/networkmanagement")
@@ -17,8 +12,6 @@ cgitb.enable()
 
 print("Content-type: text/html")
 print()
-db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-cur = db.cursor()
 
 submitted = cgi.FieldStorage()
 edit = False
@@ -40,28 +33,13 @@ type = device.type if edit else "dhcp"
 devicetype = device.devicetype if edit else 0
 connection = device.connection if edit else "ethernet"
 
-contexts = helpers.get_all_contexts()
+contexts = helpers.Context.get_all()
 
-sql = "SELECT name, number FROM devicetypes";
-cur.execute(sql)
-devicetypes = cur.fetchall()
-
-
-calling_ip = os.getenv('REMOTE_ADDR')
-#mac = subprocess.check_output(["/opt/get_mac_from_ip.sh", calling_ip], universal_newlines=True).strip()
-mac = "aa:bb:cc:dd:ee:ff"
+devicetypes = helpers.DeviceType.get_all()
 
 print("<html>")
 print("<head>")
 print("<title>Add device to network</title>")
-print("<script type='text/javascript'>")
-print("var mac = '"+mac+"';")
-print("function prefill()")
-print("{")
-print("	macField = document.getElementById('mac');")
-print("	macField.value = mac;")
-print("}")
-print("</script>")
 print("</head>")
 print("<body>")
 print("<h1>Add device</h1>")
@@ -73,7 +51,7 @@ for cnxt in contexts:
         print("<option value="+str(cnxt.id)+" selected>"+cnxt.description+"</option>")
     else:
         print("<option value="+str(cnxt.id)+">"+cnxt.description+"</option>")
-print("</select> <a href=# onclick=prefill()>prefill</a>")
+print("</select>")
 print("<br />")
 print("Identifier: <input type=text name=identifier id=mac value='"+identifier+"' />")
 print("<br />")
@@ -86,10 +64,10 @@ print("Hostname: <input type=text name=hostname value='"+hostname+"'/>")
 print("<br />")
 print("Devicetype: <select name='devicetype'>")
 for devtype in devicetypes:
-    if edit and devtype[1] == devicetype:
-        print("<option value="+str(devtype[1])+" selected>"+devtype[0]+"</option>")
+    if edit and devtype == devicetype:
+        print("<option value="+str(devtype.id)+" selected>"+devtype.name+"</option>")
     else:
-        print("<option value="+str(devtype[1])+">"+devtype[0]+"</option>")
+        print("<option value="+str(devtype.id)+">"+devtype.name+"</option>")
 print("</select>")
 print("<br />")
 print("Connection: <input type=text name=connection value='"+connection+"' />")

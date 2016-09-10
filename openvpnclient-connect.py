@@ -26,7 +26,7 @@ syslog.syslog("CN: "+str(common_name))
 syslog.syslog("Config: "+str(config_file))
 syslog.syslog("Port: "+str(port))
 
-results = helpers.get_devices_where("connection='openvpn' AND identifier=%s", (common_name,))
+results = helpers.Device.get_where("connection='openvpn' AND identifier=%s", (common_name,))
 if len(results) == 0:
     print("CN not found")
     syslog.syslog("CN not found")

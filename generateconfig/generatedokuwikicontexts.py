@@ -13,7 +13,7 @@ print("====== Kontexte ======")
 print("DO NOT EDIT - This file is generated automatically")
 print("^Name ^IP-Range ^Beschreibung ^Link ^DHCP ^")
 
-contexts = helpers.get_all_contexts()
+contexts = helpers.Context.get_all()
 
 for context in contexts:
     dhcp = "Ja" if context.dhcp else "Nein"
