@@ -60,7 +60,7 @@ class Context(EqualityMixin):
         return self.id
 
     def get_devices(self):
-        return get_devices_where("context = %s",(str(self.id),))
+        return Device.get_where("context = %s",(str(self.id),))
 
     def is_root(self):
         return self.parent is None
