@@ -23,6 +23,6 @@ for context in contexts:
     print("^Identifier ^IP ^Name ^Hostname ^Altname ^Typ ^Gerätetyp ^Verbindungstyp ^")
     for device in devices:
         altname = device.altname if device.altname else " "
-        print("|"+device.identifier+"|"+device.ip+"|"+device.description+"|"+device.hostname+"|"+altname+"|"+device.type+"|"+device.devicetype.name+"|"+device.connection+"|"
+        print("|"+device.identifier+"|"+device.ip+"|"+device.description+"|"+device.hostname+"|"+altname+"|"+device.type+"|"+device.devicetype.name+"|"+device.connection+"|")
 
 
