@@ -417,40 +417,6 @@ class AccessPoint(EqualityMixin):
     def get_all(cls):
         return cls.get_where("1")
 
-def get_devices_where(statement,vars=None):
-    db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-    cur = db.cursor()
-    sql = "SELECT identifier FROM devices WHERE "+statement
-    if vars is None:
-        cur.execute(sql)
-    else:
-        cur.execute(sql,vars)
-    results = cur.fetchall()
-    devices = []
-    for result in results:
-        devices.append(Device(result[0]))
-    return sorted(devices, key=Device.get_key)
-
-def get_all_devices():
-    return get_devices_where("1")
-
-def get_contexts_where(statement,vars=None):
-    db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-    cur = db.cursor()
-    sql = "SELECT i FROM contexts WHERE "+statement
-    if vars is None:
-        cur.execute(sql)
-    else:
-        cur.execute(sql,vars)
-    results = cur.fetchall()
-    contexts = []
-    for result in results:
-        contexts.append(Context(id=result[0]))
-    return contexts
-
-def get_all_contexts():
-    return get_contexts_where("1")
-        
 def get_secs_since_update():
     file = open("/etc/networkmanagement/last_update")
     lastchange = int(file.readline())
@@ -469,9 +435,6 @@ def strip_end(text, suffix):
     if not text.endswith(suffix):
         return text
     return text[:len(text)-len(suffix)]
-
-def get_root_context():
-    return get_contexts_where("parent IS NULL")[0]
 
 def get_device_from_fqdn(fqdn):
     if not fqdn.endswith(DOMAIN):
