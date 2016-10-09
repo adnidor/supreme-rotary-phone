@@ -46,7 +46,7 @@ print()
 print(";devices")
 for device in devices:
     print(device.hostname+" IN A "+device.ip)
-    print(device.hostname+" IN MX "+device.hostname)
+    print(device.hostname+" IN MX 10 "+device.hostname)
     print(device.hostname+" IN TXT \""+device.description+"\"")
     print(device.hostname+" IN TXT \""+device.identifier+"\"")
     if device.altname:
