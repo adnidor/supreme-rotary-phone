@@ -8,4 +8,4 @@ do
 done
 "$basepath/generateconfig/generatebindmacconfig.py" > /etc/bind/db.mac
 
-/usr/bin/systemctl reload bind9 &> /dev/null
+/bin/systemctl reload bind9 &> /dev/null
