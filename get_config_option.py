@@ -9,7 +9,9 @@ server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server
 targets = {
            "bind_dir":           {"value":server_config.bind_dir},
            "dokuwiki_dir":           {"value":server_config.dokuwiki_dir},
-           "dnsmasq_config":           {"value":server_config.dnsmasq_config}
+           "dnsmasq_config":           {"value":server_config.dnsmasq_config},
+           "icinga2_hosts":           {"value":server_config.icinga2_hosts},
+           "icinga2_hostgroups":           {"value":server_config.icinga2_hostgroups}
           }
 
 if len(sys.argv) != 2:

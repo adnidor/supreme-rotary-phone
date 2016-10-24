@@ -193,6 +193,9 @@ class Device(EqualityMixin):
     def get_fqdn(self):
         return self.hostname+self.context.get_domain_part()+"."+DOMAIN
 
+    def get_alt_fqdn(self):
+        return self.altname+self.context.get_domain_part()+"."+DOMAIN
+
     def get_key(x):
         return struct.unpack("!I", socket.inet_aton(x.ip))[0] #IP as number
 
