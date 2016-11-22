@@ -477,4 +477,14 @@ def get_device_from_fqdn(fqdn):
         return None
     return Device(results[0][0])
 
+def hostname_is_unique(hostname):
+    if not isinstance(hostname, str):
+        raise AttributeError
+    db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+    cur = db.cursor()
+    cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s)",(hostname,hostname))
+    results = cur.fetchall()
+    if len(results) == 1:
+        return True
+    return False
 
