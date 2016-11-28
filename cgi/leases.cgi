@@ -11,6 +11,7 @@ import server_config
 import helpers
 import cgi
 import cgitb
+from datetime import datetime
 cgitb.enable()
 
 
@@ -24,6 +25,7 @@ def parse_dnsmasqleases(path):
         lease_raw_split = lease_raw.split(" ")
         lease = {}
         lease['timestamp'] = lease_raw_split[0]
+        lease['datetime'] = datetime.fromtimestamp(int(lease['timestamp']))
         lease['mac'] = lease_raw_split[1]
         lease['ip'] = lease_raw_split[2]
         try:
@@ -51,7 +53,7 @@ for lease in leases:
     link = "Nicht in Datenbank"
     if lease['device'] is not None:
         link = "<a href=show_device.cgi?device=%s>%s</a>" % (lease['device'].identifier,lease['device'].description)
-    print("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (lease['mac'],lease['ip'],lease['timestamp'], link))
+    print("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (lease['mac'],lease['ip'],lease['datetime'], link))
 print("</table>")
 
 print("</body></html>")
