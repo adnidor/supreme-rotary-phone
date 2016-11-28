@@ -12,6 +12,7 @@ cur = db.cursor()
 
 targets = {
            "aps":           {"table":"aps", "column":"name", "where":"1", "convert":lambda x: x},
+           "apips":         {"table":"aps", "column":"device", "where":"1", "convert":lambda x: helpers.Device(x).ip},
            "apids":         {"table":"aps", "column":"id", "where":"1", "convert":lambda x: x},
            "owrtaps":       {"table":"aps", "column":"name", "where":"model = 'wr841n'", "convert":lambda x: x},
            "contexts":      {"table":"contexts","column":"name", "where":"1", "convert":lambda x: x},
