@@ -19,7 +19,7 @@ class Context(EqualityMixin):
     def __init__(self, name=None, id=None):
         if name is None and id is None:
             return
-        if name is not None and type(name) == type("fdsfs"):
+        if name is not None and isinstance(name, str):
             self.name = name
             db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
             cur = db.cursor()
@@ -180,6 +180,19 @@ class Device(EqualityMixin):
     @classmethod
     def get_all(cls):
         return cls.get_where("1")
+
+    #use sparingly, really slow and resource intensive
+    @classmethod
+    def reliable_get_by_fqdn(cls, fqdn):
+        if not isinstance(fqdn, str):
+            raise TypeError
+
+        all_devices = cls.get_all()
+        for device in all_devices:
+            if fqdn == device.get_fqdn() or fqdn == device.get_alt_fqdn():
+                return device
+
+        raise KeyError("Device not found")
 
     def __str__(self):
         return self.get_fqdn()
@@ -464,4 +477,14 @@ def get_device_from_fqdn(fqdn):
         return None
     return Device(results[0][0])
 
+def hostname_is_unique(hostname):
+    if not isinstance(hostname, str):
+        raise AttributeError
+    db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+    cur = db.cursor()
+    cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s)",(hostname,hostname))
+    results = cur.fetchall()
+    if len(results) == 1:
+        return True
+    return False
 

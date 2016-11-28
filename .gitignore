@@ -3,3 +3,4 @@ tmp/
 cgi/custom/*
 dynamic/enabled/
 custom
+*.swp
