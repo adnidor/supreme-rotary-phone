@@ -28,8 +28,8 @@ description = submitted.getfirst("description")
 hostname = submitted.getfirst("hostname").lower()
 devicetype = submitted.getfirst("devicetype").lower()
 connection = submitted.getfirst("connection").lower()
-internet = 1 if bool(submitted.getvalue("internet")) else 0
-alwayson = 1 if bool(submitted.getvalue("alwayson")) else 0
+internet = "1" if bool(submitted.getvalue("internet")) else "0"
+alwayson = "1" if bool(submitted.getvalue("alwayson")) else "0"
 type = submitted.getfirst("type").lower()
 
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
