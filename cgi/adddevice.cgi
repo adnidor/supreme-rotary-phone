@@ -28,6 +28,8 @@ description = submitted.getfirst("description")
 hostname = submitted.getfirst("hostname").lower()
 devicetype = submitted.getfirst("devicetype").lower()
 connection = submitted.getfirst("connection").lower()
+internet = 1 if bool(submitted.getvalue("internet")) else 0
+alwayson = 1 if bool(submitted.getvalue("alwayson")) else 0
 type = submitted.getfirst("type").lower()
 
 db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
@@ -51,16 +53,20 @@ print("Devicetype: "+devicetype)
 print("<br />")
 print("Connection: "+connection)
 print("<br />")
+print("Internet: "+internet)
+print("<br />")
+print("Always-On: "+alwayson)
+print("<br />")
 print("Type: "+type)
 print("<br />")
 
 
-sql = "INSERT INTO devices (identifier, ip, hostname, description, context, devicetype, connection, type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)";
+sql = "INSERT INTO devices (identifier, ip, hostname, description, context, devicetype, connection, type, internet, alwayson) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)";
 
-print(sql % (identifier,ip,hostname,description,context,devicetype,connection,type))
+print(sql % (identifier,ip,hostname,description,context,devicetype,connection,type,internet,alwayson))
 
 try:
-    cur.execute(sql, (identifier,ip,hostname,description,context,devicetype,connection,type))
+    cur.execute(sql, (identifier,ip,hostname,description,context,devicetype,connection,type,internet,alwayson))
     db.commit()
     print("Successfully added. <a href=update.cgi>Update</a> <a href=.>Home</a>")
 except:
