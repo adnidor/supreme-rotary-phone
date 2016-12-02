@@ -36,7 +36,7 @@ elif len(results) > 1:
     syslog.syslog("multiple devices found")
     exit(1)
 
-if results[0].portraw != port:
+if port not in results[0].portraw.split(","):
     syslog.syslog("wrong network")
     exit(1)
 syslog.syslog("IP: "+results[0].ip)
