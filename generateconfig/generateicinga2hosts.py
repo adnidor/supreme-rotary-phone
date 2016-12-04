@@ -19,5 +19,7 @@ for device in devices:
         print("  vars.os = \""+device.devicetype.os+"\"")
         awo = "true" if device.alwayson else "false"
         print("  vars.alwayson = "+awo)
+        if device.formfactor != "":
+            print("  vars.formfactor = \""+device.formfactor+"\"")
         print("}")
         print()
