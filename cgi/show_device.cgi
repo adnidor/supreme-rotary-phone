@@ -53,6 +53,7 @@ internet = "Yes" if device.internet else "No"
 print("<tr><td>Internet:</td><td>"+internet+"</td></tr>")
 alwayson = "Yes" if device.alwayson else "No"
 print("<tr><td>Always-On:</td><td>"+alwayson+"</td></tr>")
+print("<tr><td>Form factor;:</td><td>"+device.formfactor+"</td></tr>")
 
 print("</table>")
 
