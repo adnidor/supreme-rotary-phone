@@ -16,37 +16,50 @@ class EqualityMixin:
         return not self.__eq__(other)
 
 class Context(EqualityMixin):
-    def __init__(self, name=None, id=None):
+
+    _db_fields_list = [
+        "contexts.i",
+        "contexts.name",
+        "contexts.iprange",
+        "contexts.description",
+        "contexts.dhcp",
+        "contexts.parent",
+        "contexts.email",
+        "contexts.admin_user"
+    ]
+
+    def __init__(self, errorcatcher="abcd", name=None, id=None):
+        if errorcatcher != "abcd":
+            raise ValueError("one of name and id must be specified")
         if name is None and id is None:
             return
         if name is not None and isinstance(name, str):
-            self.name = name
             db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
             cur = db.cursor()
-            cur.execute("SELECT i,iprange,description,dhcp,parent,email FROM contexts WHERE name = %s", (name,))
+            cur.execute("SELECT "+",".join(self._db_fields_list)+" FROM contexts WHERE name = %s", (name,))
             result = cur.fetchone()
             if result is None:
                 raise KeyError("Context not found")
-            self.id = result[0]
-            self.iprange = result[1]
-            self.description = result[2]
-            self.dhcp = True if result[3] == 1 else False
-            self.parent = None if result[4] is None else Context(id=result[4])
-            self.email = result[5]
+            self._assign_values(result)
         elif id is not None:
-            self.id = int(id)
             db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
             cur = db.cursor()
-            cur.execute("SELECT name,iprange,description,dhcp,parent,email FROM contexts WHERE i = %s", (id,))
+            cur.execute("SELECT "+",".join(self._db_fields_list)+" FROM contexts WHERE i = %s", (id,))
             result = cur.fetchone()
             if result is None:
                 raise KeyError("Context not found")
-            self.name = result[0]
-            self.iprange = result[1]
-            self.description = result[2]
-            self.dhcp = True if result[3] == 1 else False
-            self.parent = None if result[4] is None else Context(id=result[4])
-            self.email = result[5]
+            self._assign_values(result)
+
+    def _assign_values(self,result):
+        self.id = result[0]
+        self.name = result[1]
+        self.iprange = result[2]
+        self.description = result[3]
+        self.dhcp = True if result[4] == 1 else False
+        self.parent = None if result[5] is None else Context(id=result[5])
+        self.email = result[6]
+        self.admin_user = User(result[7])
+        
     def __repr__(self):
         return "<Context "+str(self.id)+">"
 
@@ -81,7 +94,7 @@ class Context(EqualityMixin):
     def get_where(cls, statement,vars=None):
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
-        sql = "SELECT i FROM contexts WHERE "+statement
+        sql = "SELECT "+",".join(cls._db_fields_list)+" FROM contexts WHERE "+statement
         if vars is None:
             cur.execute(sql)
         else:
@@ -89,7 +102,9 @@ class Context(EqualityMixin):
         results = cur.fetchall()
         contexts = []
         for result in results:
-            contexts.append(cls(id=result[0]))
+            tmp = Context()
+            tmp._assign_values(result)
+            contexts.append(tmp)
         return contexts
 
     @classmethod
@@ -108,35 +123,47 @@ class Context(EqualityMixin):
             return len(result) == 1
 
 class Device(EqualityMixin):
+
+    _db_fields_list = [
+        "devices.ip",
+        "devices.context",
+        "devices.hostname",
+        "devices.altname",
+        "devices.description",
+        "devices.type",
+        "devices.devicetype",
+        "devices.connection",
+        "devices.ports",
+        "devices.internet",
+        "devices.alwayson",
+        "devices.formfactor",
+        "devices.identifier"
+    ]
+        
     def __init__(self, identifier):
         if identifier is None:
             return
         self.identifier = identifier
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
-        sql = """SELECT
-                    devices.ip,
-                    devices.context,
-                    devices.hostname,
-                    devices.altname,
-                    devices.description,
-                    devices.type,
-                    devices.devicetype,
-                    devices.connection,
-                    devices.ports,
-                    devices.internet,
-                    devices.alwayson,
-                    devices.formfactor
-                 FROM devices 
+        sql = "SELECT "+",".join(self._db_fields_list+Context._db_fields_list)+"""
+                 FROM devices,contexts
                  WHERE
-                    identifier = %s
+                    devices.identifier = %s
+                    AND
+                    contexts.i = devices.context
               """
         cur.execute(sql, (identifier,))
         result = cur.fetchone()
         if result is None:
             raise KeyError("Device not found")
+        self._assign_values(result)
+
+    def _assign_values(self, result):
         self.ip = result[0]
-        self.context = Context(id=result[1])
+        tmp = Context()
+        tmp._assign_values(result[len(self._db_fields_list):])
+        self.context = tmp
         self.hostname = result[2]
         self.altname = result[3]
         self.description = result[4]
@@ -149,26 +176,23 @@ class Device(EqualityMixin):
         self.internet = True if result[9] == 1 else False
         self.alwayson = True if result[10]== 1 else False
         self.formfactor = result[11]
+        self.identifier = result[12]
         self.port_str = ""
         if self.ports == ['']:
             self.ports = []
         self.ports_str = []
         if self.connection == "wifi":
             for port in self.ports:
-                cur.execute("SELECT ssid FROM wifis WHERE id=%s",(port,))
-                self.ports_str.append(cur.fetchone()[0])
-        elif self.connection == "ethernet" and self.port != ['']:
-            sql = "SELECT description FROM switches WHERE id=%s"
-            cur.execute(sql,(self.port[0],))
-            result = cur.fetchone()[0]
-            self.port_str = "Port %s auf %s"%(self.port[1],result)
+                pass
+                #self.ports_str.append(WifiNetwork(port).ssid)
         self.fqdn = self.get_fqdn()
+        
 
     @classmethod
     def get_where(cls, statement,vars=None):
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
-        sql = "SELECT identifier FROM devices WHERE "+statement
+        sql = "SELECT "+",".join(cls._db_fields_list+Context._db_fields_list)+" FROM devices,contexts WHERE contexts.i = devices.context AND "+statement
         if vars is None:
             cur.execute(sql)
         else:
@@ -176,21 +200,25 @@ class Device(EqualityMixin):
         results = cur.fetchall()
         devices = []
         for result in results:
-            devices.append(cls(result[0]))
+            print(result)
+            tmp = Device(None)
+            tmp._assign_values(result)
+            devices.append(tmp)
         return sorted(devices, key=Device.get_key)
 
     @classmethod
     def get_all(cls):
         return cls.get_where("1")
 
-    #use sparingly, really slow and resource intensive
+    #use sparingly, really slow
     @classmethod
-    def reliable_get_by_fqdn(cls, fqdn):
+    def reliable_get_by_fqdn(cls, fqdn, list_to_search=None):
         if not isinstance(fqdn, str):
             raise TypeError
 
-        all_devices = cls.get_all()
-        for device in all_devices:
+        if list_to_search is None:
+            list_to_search = cls.get_all()
+        for device in list_to_search:
             if fqdn == device.get_fqdn() or fqdn == device.get_alt_fqdn():
                 return device
 
@@ -432,6 +460,54 @@ class AccessPoint(EqualityMixin):
         for result in results:
             aps.append(cls(result[0]))
         return aps
+
+    @classmethod
+    def get_all(cls):
+        return cls.get_where("1")
+
+class User(EqualityMixin):
+    def __init__(self,id):
+        self.id = int(id)
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = """SELECT
+                    username,
+                    name,
+                    email,
+                    pushover
+                 FROM users 
+                 WHERE
+                    id = %s
+              """
+        cur.execute(sql, (id,))
+        result = cur.fetchone()
+        if result is None:
+            raise KeyError("User not found")
+        self.username = result[0]
+        self.name = result[1]
+        self.email = result[2]
+        self.pushover = result[3]
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return "<User "+str(self.id)+">"
+
+    @classmethod
+    def get_where(cls, statement,vars=None):
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = "SELECT id FROM users WHERE "+statement
+        if vars is None:
+            cur.execute(sql)
+        else:
+            cur.execute(sql,vars)
+        results = cur.fetchall()
+        users = []
+        for result in results:
+            users.append(cls(result[0]))
+        return users
 
     @classmethod
     def get_all(cls):
