@@ -36,7 +36,8 @@ print("</style>")
 print("</head><body>")
 print("<h1>Geräte</h1>")
 for context in contexts:
-    print("<h2>"+context.description+" ("+context.iprange+")</h2>")
+    dhcp = " (dynamic DHCP)" if context.dhcp else ""
+    print("<h2>"+context.description+" ("+context.iprange+")"+dhcp+"</h2>")
     if len(devices[context]) > 0:
         print("<table>")
         print("<tr><th>Identifier</th><th>IP-Adresse</th><th>Hostname</th><th>Beschreibung</th><th>Aktion</th></tr>")
