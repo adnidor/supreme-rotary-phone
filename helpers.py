@@ -126,7 +126,8 @@ class Device(EqualityMixin):
                     devices.ports,
                     devices.internet,
                     devices.alwayson,
-                    devices.formfactor
+                    devices.formfactor,
+                    devices.osversion
                  FROM devices 
                  WHERE
                     identifier = %s
@@ -149,6 +150,7 @@ class Device(EqualityMixin):
         self.internet = True if result[9] == 1 else False
         self.alwayson = True if result[10]== 1 else False
         self.formfactor = result[11]
+        self.osversion = result[12]
         self.port_str = ""
         if self.ports == ['']:
             self.ports = []

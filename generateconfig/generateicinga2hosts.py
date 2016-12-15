@@ -17,6 +17,8 @@ for device in devices:
         print("  address = \""+device.fqdn+"\"")
         print("  vars.context = \""+str(device.context.id)+"\"")
         print("  vars.os = \""+device.devicetype.os+"\"")
+        if device.devicetype.os == "linux":
+            print("  vars.distro = \""+device.osversion+"\"")
         awo = "true" if device.alwayson else "false"
         print("  vars.alwayson = "+awo)
         if device.formfactor != "":
