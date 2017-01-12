@@ -15,7 +15,44 @@ class EqualityMixin:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-class Context(EqualityMixin):
+class GetWhereMixin:
+    @classmethod
+    def get_where(cls, statement,vars=None):
+        """Get Instance where the SQL statement matches
+
+        :param str statement: SQL condition to be sent to server
+        :param tuple vars: Variables for the SQL condition (optional)
+        
+        :returns: List of objects
+        """
+        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
+        cur = db.cursor()
+        sql = "SELECT "+cls._id_col+" FROM "+cls._table+" WHERE "+statement
+        if vars is None:
+            cur.execute(sql)
+        else:
+            cur.execute(sql,vars)
+        results = cur.fetchall()
+        objects = []
+        for result in results:
+            objects.append(cls(id=result[0]))
+        return objects
+
+    @classmethod
+    def get_all(cls):
+        """Like :func:`get_where` but doesn't take arguments, returns all entries instead"""
+        return cls.get_where("1")
+
+class Context(EqualityMixin, GetWhereMixin):
+    """Gets a Context from the db
+
+    :param name str: Context name, deprecated
+    :param id: Context id
+    """
+
+    _table = "contexts"
+    _id_col = "i"
+
     def __init__(self, name=None, id=None):
         if name is None and id is None:
             return
@@ -60,9 +97,14 @@ class Context(EqualityMixin):
         return self.id
 
     def get_devices(self):
+        """Get Devices in this Context
+        
+        :returns: list of :class:`Device` objects
+        """
         return Device.get_where("context = %s",(str(self.id),))
 
     def is_root(self):
+        """Check if Context is the root Context"""
         return self.parent is None
 
     def get_domain_part(self):
@@ -78,26 +120,8 @@ class Context(EqualityMixin):
             return "db"+self.get_domain_part()+"."+suffix
 
     @classmethod
-    def get_where(cls, statement,vars=None):
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
-        sql = "SELECT i FROM contexts WHERE "+statement
-        if vars is None:
-            cur.execute(sql)
-        else:
-            cur.execute(sql,vars)
-        results = cur.fetchall()
-        contexts = []
-        for result in results:
-            contexts.append(cls(id=result[0]))
-        return contexts
-
-    @classmethod
-    def get_all(cls):
-        return cls.get_where("1")
-
-    @classmethod
     def get_root(cls):
+        """Get root Context"""
         return cls.get_where("parent IS NULL")[0]
 
     def __contains__(self,other):
@@ -107,7 +131,15 @@ class Context(EqualityMixin):
             result = Device.get_where("context = %s AND identifier = %s",(str(self.id), other,))
             return len(result) == 1
 
-class Device(EqualityMixin):
+class Device(EqualityMixin,GetWhereMixin):
+    """Get a Device from the db
+
+    :param identifier str: The identifier of the device
+    """
+
+    _table = "devices"
+    _id_col = "identifier"
+
     def __init__(self, identifier):
         if identifier is None:
             return
@@ -168,6 +200,13 @@ class Device(EqualityMixin):
 
     @classmethod
     def get_where(cls, statement,vars=None):
+        """Get Instance where the SQL statement matches
+
+        :param str statement: SQL condition to be sent to server
+        :param tuple vars: Variables for the SQL condition (optional)
+        
+        :returns: List of objects
+        """
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
         sql = "SELECT identifier FROM devices WHERE "+statement
@@ -181,13 +220,15 @@ class Device(EqualityMixin):
             devices.append(cls(result[0]))
         return sorted(devices, key=Device.get_key)
 
-    @classmethod
-    def get_all(cls):
-        return cls.get_where("1")
-
     #use sparingly, really slow and resource intensive
     @classmethod
     def reliable_get_by_fqdn(cls, fqdn):
+        """Get a device by its FQDN (slow)
+        
+        :param fqdn str: The FQDN of the device
+
+        :returns: Device object
+        """
         if not isinstance(fqdn, str):
             raise TypeError
 
@@ -208,15 +249,20 @@ class Device(EqualityMixin):
         return (self.identifier == other.identifier)
 
     def get_fqdn(self):
+        """Get FQDN of the device"""
         return self.hostname+self.context.get_domain_part()+"."+DOMAIN
 
     def get_alt_fqdn(self):
+        """Get FQDN of the device using the altname as a basis"""
         return self.altname+self.context.get_domain_part()+"."+DOMAIN
 
     def get_key(x):
         return struct.unpack("!I", socket.inet_aton(x.ip))[0] #IP as number
 
     def write_to_db(self):
+        """Write changes made to this object to the DB
+        BETA!
+        """
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
         cur.execute("SELECT 1 FROM devices WHERE identifier = %s",(self.identifier,))
@@ -234,7 +280,14 @@ class Device(EqualityMixin):
     def __hash__(self):
         return hash(self.identifier)
 
-class WifiNetwork(EqualityMixin):
+class WifiNetwork(EqualityMixin,GetWhereMixin):
+    """Get a WifiNetwork from the db
+
+    :param identifier int: The identifier of the network
+    """
+    _table = "wifis"
+    _id_col = "id"
+
     def __init__(self, id):
         self.id = int(id)
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
@@ -273,26 +326,14 @@ class WifiNetwork(EqualityMixin):
     def __repr__(self):
         return "<WifiNetwork "+str(self.id)+">"
 
-    @classmethod
-    def get_where(cls, statement,vars=None):
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
-        sql = "SELECT id FROM wifis WHERE "+statement
-        if vars is None:
-            cur.execute(sql)
-        else:
-            cur.execute(sql,vars)
-        results = cur.fetchall()
-        wifis = []
-        for result in results:
-            wifis.append(cls(result[0]))
-        return wifis
+class Vlan(EqualityMixin,GetWhereMixin):
+    """Get a Vlan from the db
 
-    @classmethod
-    def get_all(cls):
-        return cls.get_where("1")
+    :param identifier int: The identifier of the vlan
+    """
+    _table = "vlans"
+    _id_col = "id"
 
-class Vlan(EqualityMixin):
     def __init__(self,id):
         self.id = int(id)
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
@@ -315,26 +356,15 @@ class Vlan(EqualityMixin):
     def __repr__(self):
         return "<Vlan "+str(self.id)+">"
 
-    @classmethod
-    def get_where(cls, statement,vars=None):
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
-        sql = "SELECT id FROM vlans WHERE "+statement
-        if vars is None:
-            cur.execute(sql)
-        else:
-            cur.execute(sql,vars)
-        results = cur.fetchall()
-        vlans = []
-        for result in results:
-            vlans.append(cls(result[0]))
-        return vlans
+class DeviceType(EqualityMixin,GetWhereMixin):
+    """Get a DeviceType from the db
 
-    @classmethod
-    def get_all(cls):
-        return cls.get_where("1")
+    :param identifier int: The identifier of the devicetype
+    """
 
-class DeviceType(EqualityMixin):
+    _table = "devicetypes"
+    _id_col = "number"
+
     def __init__(self,id):
         self.id = int(id)
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
@@ -361,26 +391,15 @@ class DeviceType(EqualityMixin):
     def __repr__(self):
         return "<DeviceType "+str(self.id)+">"
 
-    @classmethod
-    def get_where(cls, statement,vars=None):
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
-        sql = "SELECT number FROM devicetypes WHERE "+statement
-        if vars is None:
-            cur.execute(sql)
-        else:
-            cur.execute(sql,vars)
-        results = cur.fetchall()
-        devtypes = []
-        for result in results:
-            devtypes.append(cls(result[0]))
-        return devtypes
+class AccessPoint(EqualityMixin,GetWhereMixin):
+    """Get a AccessPoint from the db
 
-    @classmethod
-    def get_all(cls):
-        return cls.get_where("1")
+    :param identifier int: The identifier of the ap
+    """
 
-class AccessPoint(EqualityMixin):
+    _table = "aps"
+    _id_col = "id"
+
     def __init__(self,id):
         self.id = int(id)
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
@@ -420,26 +439,12 @@ class AccessPoint(EqualityMixin):
     def __repr__(self):
         return "<AccessPoint "+str(self.id)+">"
 
-    @classmethod
-    def get_where(cls, statement,vars=None):
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
-        sql = "SELECT id FROM aps WHERE "+statement
-        if vars is None:
-            cur.execute(sql)
-        else:
-            cur.execute(sql,vars)
-        results = cur.fetchall()
-        aps = []
-        for result in results:
-            aps.append(cls(result[0]))
-        return aps
-
-    @classmethod
-    def get_all(cls):
-        return cls.get_where("1")
-
 def get_secs_since_update():
+    """Get seconds since the last update was done.
+    Reads `/etc/networkmanagement/last_update`
+
+    :returns: int
+    """
     file = open("/etc/networkmanagement/last_update")
     lastchange = int(file.readline())
     import time
