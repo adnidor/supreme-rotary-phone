@@ -1,7 +1,7 @@
 Database Structure
 ==================
 
-SRP uses one database with the following tables. For most tables here there is a corresponding class in :doc:`helpers`.
+SRP uses one database with the following tables. For most tables here there is a corresponding class in :doc:`files/helpers.py`.
 
 devices
 -------
