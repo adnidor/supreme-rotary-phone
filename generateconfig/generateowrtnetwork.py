@@ -19,25 +19,26 @@ print("#DO NOT EDIT - This file was generated automatically from an MySQL-Databa
 switchconfig = ap.switch.split(",") if ap.switch != "" else None
 
 print("config interface 'loopback'")
-print("    option ifname 'lo'")
-print("    option proto 'static'")
-print("    option ipaddr '127.0.0.1'")
-print("    option netmask '255.0.0.0'")
+interface = { "ifname" : "lo",
+              "proto"  : "static",
+              "ipaddr" : "127.0.0.1",
+              "netmask": "255.0.0.0"}
+helpers.print_uci_dict(interface, 4)
 print()
 
 for vlan in ap.vlans:
     print("config interface 'vlan"+str(vlan.id)+"'")
-    ifname= "option ifname '"
+    interface = { "type": "bridge"}
+    ifname = ""
     for iface in ap.interfaces:
         ifname=ifname+iface+"."+str(vlan.id)+" "
-    ifname=ifname.strip()+"'"
-    print("    "+ifname)
-    print("    option type 'bridge'")
+    interface.update({"ifname":ifname.strip()})
     if vlan.id == ap.mvlan.id:
-        print("    option proto 'dhcp'")
+        interface.update({"proto":"dhcp"})
     else:
-        print("    option proto 'none'")
-        print("    option ipv6 0")
+        interface.update({"proto":"none",
+                          "ipv6" :0})
+    helpers.print_uci_dict(interface, 4)
     print()
 
 if switchconfig is not None:

@@ -508,8 +508,10 @@ def print_uci_dict(input_dict, indent=0):
     istring = " " * indent
 
     for key,value in input_dict.items():
-        if type(value) is not list:
-            print(istring+"option "+str(key)+" '"+str(value)+"'")
-        else:
+        if type(value) is list:
             for item in value:
                 print(istring+"list "+str(key)+" '"+str(item)+"'")
+        elif value is None:
+            continue
+        else:
+            print(istring+"option "+str(key)+" '"+str(value)+"'")
