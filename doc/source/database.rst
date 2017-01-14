@@ -108,6 +108,7 @@ passphrase      The network passphrase if authmethod is "passphrase" or "wep"
 mode            Mode of the network, one of "ap" and "adhoc"
 whitelist       If a whitelist should be active (see column ports in table devices), one of 1 and 0
 enabled         If the network should be enabled, one of 1 and 0
+bssid           BSSID of the network, only relevant for mode='adhoc'
 ============    =============
 
 vlans

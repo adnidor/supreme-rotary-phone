@@ -301,7 +301,8 @@ class WifiNetwork(EqualityMixin,GetWhereMixin):
                     passphrase,
                     mode,
                     whitelist,
-                    enabled
+                    enabled,
+                    bssid
                  FROM wifis 
                  WHERE
                     id = %s
@@ -319,6 +320,7 @@ class WifiNetwork(EqualityMixin,GetWhereMixin):
         self.mode = result[6]
         self.whitelist = True if result[7] == 1 else False
         self.enabled = True if result[8] == 1 else False
+        self.bssid = result[9]
 
     def __str__(self):
         return self.ssid
