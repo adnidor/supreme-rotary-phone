@@ -60,4 +60,6 @@ for wifi in wifis:
         print("    option macfilter 'allow'")
     if not wifi.enabled:
         print("    option disabled 1")
+    else:
+        print("    option disabled 0")
     print()
