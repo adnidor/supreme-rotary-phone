@@ -22,7 +22,7 @@ print("    option path '"+models.wireless_path[ap.model]+"'")
 print("    option country 'DE'")
 print("    option channel '"+str(ap.channel)+"'")
 if not ap.wifi_enabled:
-    print("    option disabled 1")
+    print("    option disabled '1'")
 print()
 
 wifis = helpers.WifiNetwork.get_all()
@@ -59,7 +59,9 @@ for wifi in wifis:
                 print("    list maclist '"+device.identifier.strip()+"'")
         print("    option macfilter 'allow'")
     if not wifi.enabled:
-        print("    option disabled 1")
+        print("    option disabled '1'")
     else:
-        print("    option disabled 0")
+        print("    option disabled '0'")
+    if wifi.mode == "adhoc":
+        print("    option bssid '"+wifi.bssid+"'")
     print()
