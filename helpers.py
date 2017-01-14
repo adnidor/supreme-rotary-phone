@@ -499,3 +499,17 @@ def hostname_is_unique(hostname):
         return True
     return False
 
+def print_uci_dict(input_dict, indent=0):
+    """Print a dictionary containing uci key-value pairs
+
+    :param input_dict: Dictionary to print
+    :param indent: Number of spaces used to indent the values
+    """
+    istring = " " * indent
+
+    for key,value in input_dict.items():
+        if type(value) is not list:
+            print(istring+"option "+str(key)+" '"+str(value)+"'")
+        else:
+            for item in value:
+                print(istring+"list "+str(key)+" '"+str(item)+"'")
