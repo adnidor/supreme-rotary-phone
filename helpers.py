@@ -46,7 +46,7 @@ class GetWhereMixin:
 class Context(EqualityMixin, GetWhereMixin):
     """Gets a Context from the db
 
-    :param name str: Context name, deprecated
+    :param str name: Context name, deprecated
     :param id: Context id
     """
 
@@ -134,7 +134,7 @@ class Context(EqualityMixin, GetWhereMixin):
 class Device(EqualityMixin,GetWhereMixin):
     """Get a Device from the db
 
-    :param identifier str: The identifier of the device
+    :param str identifier: The identifier of the device
     """
 
     _table = "devices"
@@ -386,6 +386,13 @@ class DeviceType(EqualityMixin,GetWhereMixin):
         self.name = result[0]
         self.os = result[1]
         self.platform = result[2]
+
+    def get_devices(self):
+        """Get Devices with this DeviceType
+        
+        :returns: list of :class:`Device` objects
+        """
+        return Device.get_where("devicetype = %s",(str(self.id),))
 
     def __str__(self):
         return self.name
