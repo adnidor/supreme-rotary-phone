@@ -23,5 +23,7 @@ for device in devices:
         print("  vars.alwayson = "+awo)
         if device.formfactor != "":
             print("  vars.formfactor = \""+device.formfactor+"\"")
+        if device.vmhost is not None:
+            print("  parent_host_name = \""+device.vmhost.fqdn+"\"")
         print("}")
         print()

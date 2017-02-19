@@ -96,12 +96,18 @@ class Context(EqualityMixin, GetWhereMixin):
     def __hash__(self):
         return self.id
 
-    def get_devices(self):
+    def get_devices(self,all_devices=None):
         """Get Devices in this Context
+
+        If all_devices is supplied, don't query the database but use this list as the data source
         
+        :param list all_devices: List of devices to search (optional)
         :returns: list of :class:`Device` objects
         """
-        return Device.get_where("context = %s",(str(self.id),))
+        if all_devices is None:
+            return Device.get_where("context = %s",(str(self.id),))
+        else:
+            return [ d for d in all_devices if d.context == self ]
 
     def is_root(self):
         """Check if Context is the root Context"""
@@ -159,7 +165,8 @@ class Device(EqualityMixin,GetWhereMixin):
                     devices.internet,
                     devices.alwayson,
                     devices.formfactor,
-                    devices.osversion
+                    devices.osversion,
+                    devices.vmhost
                  FROM devices 
                  WHERE
                     identifier = %s
@@ -187,6 +194,7 @@ class Device(EqualityMixin,GetWhereMixin):
         if self.ports == ['']:
             self.ports = []
         self.ports_str = []
+        self.vmhost = None if not result[13] else Device(result[13])
         if self.connection == "wifi":
             for port in self.ports:
                 cur.execute("SELECT ssid FROM wifis WHERE id=%s",(port,))
@@ -222,17 +230,19 @@ class Device(EqualityMixin,GetWhereMixin):
 
     #use sparingly, really slow and resource intensive
     @classmethod
-    def reliable_get_by_fqdn(cls, fqdn):
+    def reliable_get_by_fqdn(cls, fqdn, all_devices):
         """Get a device by its FQDN (slow)
         
         :param fqdn str: The FQDN of the device
+        :param list all_devices: List of devices to search (optional)
 
         :returns: Device object
         """
         if not isinstance(fqdn, str):
             raise TypeError
 
-        all_devices = cls.get_all()
+        if all_devices is None:
+            all_devices = cls.get_all()
         for device in all_devices:
             if fqdn == device.get_fqdn() or fqdn == device.get_alt_fqdn():
                 return device
@@ -387,12 +397,18 @@ class DeviceType(EqualityMixin,GetWhereMixin):
         self.os = result[1]
         self.platform = result[2]
 
-    def get_devices(self):
-        """Get Devices with this DeviceType
+    def get_devices(self,all_devices=None):
+        """Get Devices with ths DeviceType
+
+        If all_devices is supplied, don't query the database but use this list as the data source
         
+        :param list all_devices: List of devices to search (optional)
         :returns: list of :class:`Device` objects
         """
-        return Device.get_where("devicetype = %s",(str(self.id),))
+        if all_devices is None:
+            return Device.get_where("devicetype = %s",(str(self.id),))
+        else:
+            return [ d for d in all_devices if d.devicetype == self ]
 
     def __str__(self):
         return self.name
