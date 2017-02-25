@@ -502,12 +502,16 @@ def strip_end(text, suffix):
 
 
 def get_device_from_fqdn(fqdn):
+    """Tries to match a give FQDN to a Device. Works sometimes.
+    If reliability is an issue, use :func:`Device.reliable_get_by_fqdn`
+
+    :param str fqdn: FQDN"""
     if not fqdn.endswith(DOMAIN):
         return None
     hostcntxt = strip_end(fqdn, "." + DOMAIN)
     db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
     cur = db.cursor()
-    contexts = get_all_contexts()
+    contexts = Context.get_all()
     devcontext = None
     host = None
     for context in contexts:
@@ -516,7 +520,7 @@ def get_device_from_fqdn(fqdn):
             host = strip_end(hostcntxt, "." + devcontext.name)
             break
     if devcontext is None:
-        devcontext = get_root_context()
+        devcontext = Context.get_root()
         host = strip_end(hostcntxt, ".")
     cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s) AND context = %s", (host, host, devcontext.id))
     results = cur.fetchall()
@@ -526,6 +530,10 @@ def get_device_from_fqdn(fqdn):
 
 
 def hostname_is_unique(hostname):
+    """Check if given hostname is unique
+
+    :param str hostname: Hostname to be checked
+    """
     if not isinstance(hostname, str):
         raise AttributeError
     db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
