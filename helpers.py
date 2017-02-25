@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 #coding=utf-8
 import mysql.connector as ms
-import socket,struct
+import socket, struct
 from importlib.machinery import SourceFileLoader
 
 server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server_config.py").load_module()
 
-DOMAIN=server_config.domain
+DOMAIN = server_config.domain
+
 
 class EqualityMixin:
     def __eq__(self, other):
@@ -15,9 +16,10 @@ class EqualityMixin:
     def __ne__(self, other):
         return not self.__eq__(other)
 
+
 class GetWhereMixin:
     @classmethod
-    def get_where(cls, statement,vars=None):
+    def get_where(cls, statement, vars=None):
         """Get Instance where the SQL statement matches
 
         :param str statement: SQL condition to be sent to server
@@ -27,11 +29,11 @@ class GetWhereMixin:
         """
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
-        sql = "SELECT "+cls._id_col+" FROM "+cls._table+" WHERE "+statement
+        sql = "SELECT " + cls._id_col + " FROM " + cls._table + " WHERE " + statement
         if vars is None:
             cur.execute(sql)
         else:
-            cur.execute(sql,vars)
+            cur.execute(sql, vars)
         results = cur.fetchall()
         objects = []
         for result in results:
@@ -42,6 +44,7 @@ class GetWhereMixin:
     def get_all(cls):
         """Like :func:`get_where` but doesn't take arguments, returns all entries instead"""
         return cls.get_where("1")
+
 
 class Context(EqualityMixin, GetWhereMixin):
     """Gets a Context from the db
@@ -84,8 +87,9 @@ class Context(EqualityMixin, GetWhereMixin):
             self.dhcp = True if result[3] == 1 else False
             self.parent = None if result[4] is None else Context(id=result[4])
             self.email = result[5]
+
     def __repr__(self):
-        return "<Context "+str(self.id)+">"
+        return "<Context " + str(self.id) + ">"
 
     def __str__(self):
         return self.description
@@ -96,7 +100,7 @@ class Context(EqualityMixin, GetWhereMixin):
     def __hash__(self):
         return self.id
 
-    def get_devices(self,all_devices=None):
+    def get_devices(self, all_devices=None):
         """Get Devices in this Context
 
         If all_devices is supplied, don't query the database but use this list as the data source
@@ -105,9 +109,9 @@ class Context(EqualityMixin, GetWhereMixin):
         :returns: list of :class:`Device` objects
         """
         if all_devices is None:
-            return Device.get_where("context = %s",(str(self.id),))
+            return Device.get_where("context = %s", (str(self.id),))
         else:
-            return [ d for d in all_devices if d.context == self ]
+            return [d for d in all_devices if d.context == self]
 
     def is_root(self):
         """Check if Context is the root Context"""
@@ -117,27 +121,28 @@ class Context(EqualityMixin, GetWhereMixin):
         if self.is_root():
             return ""
         else:
-            return "."+self.name+self.parent.get_domain_part()
+            return "." + self.name + self.parent.get_domain_part()
 
     def get_zonefile_name(self, suffix):
         if self.is_root():
-            return "db.root."+suffix
+            return "db.root." + suffix
         else:
-            return "db"+self.get_domain_part()+"."+suffix
+            return "db" + self.get_domain_part() + "." + suffix
 
     @classmethod
     def get_root(cls):
         """Get root Context"""
         return cls.get_where("parent IS NULL")[0]
 
-    def __contains__(self,other):
+    def __contains__(self, other):
         if type(other) is Device:
             return other.context == self
         elif type(other) is str:
-            result = Device.get_where("context = %s AND identifier = %s",(str(self.id), other,))
+            result = Device.get_where("context = %s AND identifier = %s", (str(self.id), other,))
             return len(result) == 1
 
-class Device(EqualityMixin,GetWhereMixin):
+
+class Device(EqualityMixin, GetWhereMixin):
     """Get a Device from the db
 
     :param str identifier: The identifier of the device
@@ -187,7 +192,7 @@ class Device(EqualityMixin,GetWhereMixin):
         self.port = result[8].split("/") if self.connection == "ethernet" else ['']
         self.portraw = result[8]
         self.internet = True if result[9] == 1 else False
-        self.alwayson = True if result[10]== 1 else False
+        self.alwayson = True if result[10] == 1 else False
         self.formfactor = result[11]
         self.osversion = result[12]
         self.port_str = ""
@@ -197,17 +202,17 @@ class Device(EqualityMixin,GetWhereMixin):
         self.vmhost = None if not result[13] else Device(result[13])
         if self.connection == "wifi":
             for port in self.ports:
-                cur.execute("SELECT ssid FROM wifis WHERE id=%s",(port,))
+                cur.execute("SELECT ssid FROM wifis WHERE id=%s", (port,))
                 self.ports_str.append(cur.fetchone()[0])
         elif self.connection == "ethernet" and self.port != ['']:
             sql = "SELECT description FROM switches WHERE id=%s"
-            cur.execute(sql,(self.port[0],))
+            cur.execute(sql, (self.port[0],))
             result = cur.fetchone()[0]
-            self.port_str = "Port %s auf %s"%(self.port[1],result)
+            self.port_str = "Port %s auf %s" % (self.port[1], result)
         self.fqdn = self.get_fqdn()
 
     @classmethod
-    def get_where(cls, statement,vars=None):
+    def get_where(cls, statement, vars=None):
         """Get Instance where the SQL statement matches
 
         :param str statement: SQL condition to be sent to server
@@ -217,11 +222,11 @@ class Device(EqualityMixin,GetWhereMixin):
         """
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
-        sql = "SELECT identifier FROM devices WHERE "+statement
+        sql = "SELECT identifier FROM devices WHERE " + statement
         if vars is None:
             cur.execute(sql)
         else:
-            cur.execute(sql,vars)
+            cur.execute(sql, vars)
         results = cur.fetchall()
         devices = []
         for result in results:
@@ -253,21 +258,21 @@ class Device(EqualityMixin,GetWhereMixin):
         return self.get_fqdn()
 
     def __repr__(self):
-        return "<Device "+self.identifier+">"
+        return "<Device " + self.identifier + ">"
 
     def __eq__(self, other):
         return (self.identifier == other.identifier)
 
     def get_fqdn(self):
         """Get FQDN of the device"""
-        return self.hostname+self.context.get_domain_part()+"."+DOMAIN
+        return self.hostname + self.context.get_domain_part() + "." + DOMAIN
 
     def get_alt_fqdn(self):
         """Get FQDN of the device using the altname as a basis"""
-        return self.altname+self.context.get_domain_part()+"."+DOMAIN
+        return self.altname + self.context.get_domain_part() + "." + DOMAIN
 
     def get_key(x):
-        return struct.unpack("!I", socket.inet_aton(x.ip))[0] #IP as number
+        return struct.unpack("!I", socket.inet_aton(x.ip))[0]  #IP as number
 
     def write_to_db(self):
         """Write changes made to this object to the DB
@@ -275,7 +280,7 @@ class Device(EqualityMixin,GetWhereMixin):
         """
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
-        cur.execute("SELECT 1 FROM devices WHERE identifier = %s",(self.identifier,))
+        cur.execute("SELECT 1 FROM devices WHERE identifier = %s", (self.identifier,))
         exists = len(cur.fetchall()) > 0
         if exists:
             sql = "UPDATE devices SET ip = %s, context = %s, hostname = %s, altname = %s, description = %s, devicetype = %s, connection = %s, ports = %s WHERE identifier = %s"
@@ -290,7 +295,8 @@ class Device(EqualityMixin,GetWhereMixin):
     def __hash__(self):
         return hash(self.identifier)
 
-class WifiNetwork(EqualityMixin,GetWhereMixin):
+
+class WifiNetwork(EqualityMixin, GetWhereMixin):
     """Get a WifiNetwork from the db
 
     :param identifier int: The identifier of the network
@@ -336,9 +342,10 @@ class WifiNetwork(EqualityMixin,GetWhereMixin):
         return self.ssid
 
     def __repr__(self):
-        return "<WifiNetwork "+str(self.id)+">"
+        return "<WifiNetwork " + str(self.id) + ">"
 
-class Vlan(EqualityMixin,GetWhereMixin):
+
+class Vlan(EqualityMixin, GetWhereMixin):
     """Get a Vlan from the db
 
     :param identifier int: The identifier of the vlan
@@ -346,7 +353,7 @@ class Vlan(EqualityMixin,GetWhereMixin):
     _table = "vlans"
     _id_col = "id"
 
-    def __init__(self,id):
+    def __init__(self, id):
         self.id = int(id)
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
@@ -366,9 +373,10 @@ class Vlan(EqualityMixin,GetWhereMixin):
         return self.name
 
     def __repr__(self):
-        return "<Vlan "+str(self.id)+">"
+        return "<Vlan " + str(self.id) + ">"
 
-class DeviceType(EqualityMixin,GetWhereMixin):
+
+class DeviceType(EqualityMixin, GetWhereMixin):
     """Get a DeviceType from the db
 
     :param identifier int: The identifier of the devicetype
@@ -377,7 +385,7 @@ class DeviceType(EqualityMixin,GetWhereMixin):
     _table = "devicetypes"
     _id_col = "number"
 
-    def __init__(self,id):
+    def __init__(self, id):
         self.id = int(id)
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
@@ -397,7 +405,7 @@ class DeviceType(EqualityMixin,GetWhereMixin):
         self.os = result[1]
         self.platform = result[2]
 
-    def get_devices(self,all_devices=None):
+    def get_devices(self, all_devices=None):
         """Get Devices with ths DeviceType
 
         If all_devices is supplied, don't query the database but use this list as the data source
@@ -406,17 +414,18 @@ class DeviceType(EqualityMixin,GetWhereMixin):
         :returns: list of :class:`Device` objects
         """
         if all_devices is None:
-            return Device.get_where("devicetype = %s",(str(self.id),))
+            return Device.get_where("devicetype = %s", (str(self.id),))
         else:
-            return [ d for d in all_devices if d.devicetype == self ]
+            return [d for d in all_devices if d.devicetype == self]
 
     def __str__(self):
         return self.name
 
     def __repr__(self):
-        return "<DeviceType "+str(self.id)+">"
+        return "<DeviceType " + str(self.id) + ">"
 
-class AccessPoint(EqualityMixin,GetWhereMixin):
+
+class AccessPoint(EqualityMixin, GetWhereMixin):
     """Get a AccessPoint from the db
 
     :param identifier int: The identifier of the ap
@@ -425,7 +434,7 @@ class AccessPoint(EqualityMixin,GetWhereMixin):
     _table = "aps"
     _id_col = "id"
 
-    def __init__(self,id):
+    def __init__(self, id):
         self.id = int(id)
         db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
         cur = db.cursor()
@@ -462,7 +471,8 @@ class AccessPoint(EqualityMixin,GetWhereMixin):
         self.wifi_enabled = True if result[10] == 1 else False
 
     def __repr__(self):
-        return "<AccessPoint "+str(self.id)+">"
+        return "<AccessPoint " + str(self.id) + ">"
+
 
 def get_secs_since_update():
     """Get seconds since the last update was done.
@@ -474,7 +484,8 @@ def get_secs_since_update():
     lastchange = int(file.readline())
     import time
     timestamp = int(time.time())
-    return timestamp-lastchange
+    return timestamp - lastchange
+
 
 def is_user_authorized(cn):
     userfile = open("/etc/networkmanagement/authorized_users")
@@ -483,15 +494,17 @@ def is_user_authorized(cn):
             return True
     return False
 
+
 def strip_end(text, suffix):
     if not text.endswith(suffix):
         return text
-    return text[:len(text)-len(suffix)]
+    return text[:len(text) - len(suffix)]
+
 
 def get_device_from_fqdn(fqdn):
     if not fqdn.endswith(DOMAIN):
         return None
-    hostcntxt = strip_end(fqdn, "."+DOMAIN)
+    hostcntxt = strip_end(fqdn, "." + DOMAIN)
     db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
     cur = db.cursor()
     contexts = get_all_contexts()
@@ -500,27 +513,29 @@ def get_device_from_fqdn(fqdn):
     for context in contexts:
         if hostcntxt.endswith(context.name):
             devcontext = context
-            host = strip_end(hostcntxt,"."+devcontext.name)
+            host = strip_end(hostcntxt, "." + devcontext.name)
             break
     if devcontext is None:
         devcontext = get_root_context()
         host = strip_end(hostcntxt, ".")
-    cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s) AND context = %s",(host,host,devcontext.id))
+    cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s) AND context = %s", (host, host, devcontext.id))
     results = cur.fetchall()
     if len(results) != 1:
         return None
     return Device(results[0][0])
+
 
 def hostname_is_unique(hostname):
     if not isinstance(hostname, str):
         raise AttributeError
     db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
     cur = db.cursor()
-    cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s)",(hostname,hostname))
+    cur.execute("SELECT identifier FROM devices WHERE (hostname = %s OR altname = %s)", (hostname, hostname))
     results = cur.fetchall()
     if len(results) == 1:
         return True
     return False
+
 
 def print_uci_dict(input_dict, indent=0):
     """Print a dictionary containing uci key-value pairs
@@ -530,11 +545,11 @@ def print_uci_dict(input_dict, indent=0):
     """
     istring = " " * indent
 
-    for key,value in input_dict.items():
+    for key, value in input_dict.items():
         if type(value) is list:
             for item in value:
-                print(istring+"list "+str(key)+" '"+str(item)+"'")
+                print(istring + "list " + str(key) + " '" + str(item) + "'")
         elif value is None:
             continue
         else:
-            print(istring+"option "+str(key)+" '"+str(value)+"'")
+            print(istring + "option " + str(key) + " '" + str(value) + "'")
