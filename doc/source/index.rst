@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Supreme Rotary Phone
-================================================
+====================
 
 Overview of the file structure:
 
