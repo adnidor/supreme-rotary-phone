@@ -233,7 +233,7 @@ class Device(EqualityMixin,GetWhereMixin):
     def reliable_get_by_fqdn(cls, fqdn, all_devices):
         """Get a device by its FQDN (slow)
         
-        :param fqdn str: The FQDN of the device
+        :param str fqdn: The FQDN of the device
         :param list all_devices: List of devices to search (optional)
 
         :returns: Device object
