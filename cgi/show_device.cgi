@@ -59,7 +59,8 @@ alwayson = "Yes" if device.alwayson else "No"
 print("<tr><td>Always-On:</td><td>" + alwayson + "</td></tr>")
 print("<tr><td>Form factor:</td><td>" + device.formfactor + "</td></tr>")
 print("<tr><td>OS version:</td><td>" + device.osversion + "</td></tr>")
-print("<tr><td>VM Host:</td><td>" + get_link_details(device.vmhost) + "</td></tr>")
+if device.vmhost is not None:
+    print("<tr><td>VM Host:</td><td>" + get_link_details(device.vmhost) + "</td></tr>")
 
 print("</table>")
 
