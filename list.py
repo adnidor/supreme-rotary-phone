@@ -27,8 +27,8 @@ if len(sys.argv) != 2:
 target = sys.argv[1] #erster Parameter
 
 if target not in targets:
-   print("unknown target")
-   exit(1)
+    print("unknown target")
+    exit(1)
 
 cur.execute("SELECT "+targets[target]["column"]+" FROM "+targets[target]["table"]+" WHERE "+targets[target]["where"])
 results = cur.fetchall()
