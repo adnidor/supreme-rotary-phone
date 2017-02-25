@@ -27,6 +27,7 @@ internet        If the device should access the internet, one of 1 and 0
 alwayson        If the device is always on (e.g. for monitoring), one of 1 and 0
 formfactor      The formfactor of the device. See :doc:`formfactors` for details
 osversion       The version of the OS (not used much) (intended values like: "debian", "arch")
+vmhost          Identifier of the device where this device is running or empty
 ============    =============
 
 contexts
