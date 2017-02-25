@@ -16,8 +16,11 @@ import cgitb
 
 cgitb.enable()
 
-def get_link_details(device):
-    return "<a href=show_device.cgi?device="+device.identifier+">"+device.fqdn+"</a>"
+def get_link_device(device):
+    if device is not None:
+        return "<a href=show_device.cgi?device="+device.identifier+">"+device.fqdn+"</a>"
+    else:
+        return "None"
 
 print("Content-type: text/html; charset=UTF-8")
 print()
@@ -39,6 +42,7 @@ print("<h1>Detailansicht</h1>")
 print("<h2>" + device.description + " (" + device.fqdn + ")</h2>")
 print("<table>")
 print("<tr><td>Identifier:</td><td>" + device.identifier + "</td></tr>")
+print("<tr><td>Context:</td><td>" + str(device.context) + "</td></tr>")
 print("<tr><td>IP-Adresse:</td><td>" + device.ip + "</td></tr>")
 print("<tr><td>Hostname:</td><td>" + device.hostname + "</td></tr>")
 print("<tr><td>Alternativer Hostname:</td><td>" + device.altname + "</td></tr>")
@@ -59,8 +63,7 @@ alwayson = "Yes" if device.alwayson else "No"
 print("<tr><td>Always-On:</td><td>" + alwayson + "</td></tr>")
 print("<tr><td>Form factor:</td><td>" + device.formfactor + "</td></tr>")
 print("<tr><td>OS version:</td><td>" + device.osversion + "</td></tr>")
-if device.vmhost is not None:
-    print("<tr><td>VM Host:</td><td>" + get_link_details(device.vmhost) + "</td></tr>")
+print("<tr><td>VM Host:</td><td>" + get_link_device(device.vmhost) + "</td></tr>")
 
 print("</table>")
 
