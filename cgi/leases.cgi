@@ -35,7 +35,7 @@ def parse_dnsmasqleases(path):
         leases.append(lease)
     return leases
 
-leases = parse_dnsmasqleases("/var/lib/misc/dnsmasq.leases")
+leases = sorted(parse_dnsmasqleases("/var/lib/misc/dnsmasq.leases"), key=lambda x: x['datetime'])
 
 print("<html><head>")
 print("<title>DHCP-Leases</title>")
