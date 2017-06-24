@@ -74,10 +74,16 @@ print("</select>")
 print("<br />")
 print("Connection: <input type=text name=connection value='" + connection + "' />")
 print("<br />")
-checked = "checked" if device.internet else ""
+if edit:
+    checked = "checked" if device.internet else ""
+else:
+    checked = ""
 rint("Internet: <input type=checkbox " + checked + " name=internet />")
 print("<br />")
-checked = "checked" if device.alwayson else ""
+if edit:
+    checked = "checked" if device.alwayson else ""
+else:
+    cheched = ""
 print("Always-On: <input type=checkbox " + checked + " name=alwayson />")
 print("<br />")
 print("Type: <input type=text name=type value='" + type + "' />")
