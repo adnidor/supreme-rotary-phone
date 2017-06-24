@@ -78,7 +78,7 @@ if edit:
     checked = "checked" if device.internet else ""
 else:
     checked = ""
-rint("Internet: <input type=checkbox " + checked + " name=internet />")
+print("Internet: <input type=checkbox " + checked + " name=internet />")
 print("<br />")
 if edit:
     checked = "checked" if device.alwayson else ""
