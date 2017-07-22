@@ -8,6 +8,7 @@ server_config = SourceFileLoader("server_config", "/etc/networkmanagement/server
 
 DOMAIN = server_config.domain
 
+db_connection = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
 
 class EqualityMixin:
     def __eq__(self, other):
@@ -27,8 +28,7 @@ class GetWhereMixin:
         
         :returns: List of objects
         """
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
+        cur = db_connection.cursor()
         sql = "SELECT " + cls._id_col + " FROM " + cls._table + " WHERE " + statement
         if vars is None:
             cur.execute(sql)
@@ -61,8 +61,7 @@ class Context(EqualityMixin, GetWhereMixin):
             return
         if name is not None and isinstance(name, str):
             self.name = name
-            db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-            cur = db.cursor()
+            cur = db_connection.cursor()
             cur.execute("SELECT i,iprange,description,dhcp,parent,email FROM contexts WHERE name = %s", (name,))
             result = cur.fetchone()
             if result is None:
@@ -75,8 +74,7 @@ class Context(EqualityMixin, GetWhereMixin):
             self.email = result[5]
         elif id is not None:
             self.id = int(id)
-            db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-            cur = db.cursor()
+            cur = db_connection.cursor()
             cur.execute("SELECT name,iprange,description,dhcp,parent,email FROM contexts WHERE i = %s", (id,))
             result = cur.fetchone()
             if result is None:
@@ -155,8 +153,7 @@ class Device(EqualityMixin, GetWhereMixin):
         if identifier is None:
             return
         self.identifier = identifier
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
+        cur = db_connection.cursor()
         sql = """SELECT
                     devices.ip,
                     devices.context,
@@ -220,8 +217,7 @@ class Device(EqualityMixin, GetWhereMixin):
         
         :returns: List of objects
         """
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
+        cur = db_connection.cursor()
         sql = "SELECT identifier FROM devices WHERE " + statement
         if vars is None:
             cur.execute(sql)
@@ -306,8 +302,7 @@ class WifiNetwork(EqualityMixin, GetWhereMixin):
 
     def __init__(self, id):
         self.id = int(id)
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
+        cur = db_connection.cursor()
         sql = """SELECT
                     ssid,
                     vlan,
@@ -355,8 +350,7 @@ class Vlan(EqualityMixin, GetWhereMixin):
 
     def __init__(self, id):
         self.id = int(id)
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
+        cur = db_connection.cursor()
         sql = """SELECT
                     name
                  FROM vlans 
@@ -387,8 +381,7 @@ class DeviceType(EqualityMixin, GetWhereMixin):
 
     def __init__(self, id):
         self.id = int(id)
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
+        cur = db_connection.cursor()
         sql = """SELECT
                     name,
                     os,
@@ -436,8 +429,7 @@ class AccessPoint(EqualityMixin, GetWhereMixin):
 
     def __init__(self, id):
         self.id = int(id)
-        db = ms.connect(host=server_config.host, user=server_config.user, passwd=server_config.passwd, db=server_config.db)
-        cur = db.cursor()
+        cur = db_connection.cursor()
         sql = """SELECT
                     device,
                     channel,
