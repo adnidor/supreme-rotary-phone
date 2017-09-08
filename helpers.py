@@ -98,6 +98,12 @@ class Context(EqualityMixin, GetWhereMixin):
     def __hash__(self):
         return self.id
 
+    def __len__(self):
+        cur = db_connection.cursor()
+        cur.execute("SELECT identifier FROM devices WHERE context = %s", (str(self.id),))
+        result = cur.fetchall()
+        return len(result)
+
     def get_devices(self, all_devices=None):
         """Get Devices in this Context
 
