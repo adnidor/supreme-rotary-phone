@@ -174,7 +174,8 @@ class Device(EqualityMixin, GetWhereMixin):
                     devices.alwayson,
                     devices.formfactor,
                     devices.osversion,
-                    devices.vmhost
+                    devices.vmhost,
+                    devices.backup
                  FROM devices 
                  WHERE
                     identifier = %s
@@ -203,6 +204,7 @@ class Device(EqualityMixin, GetWhereMixin):
             self.ports = []
         self.ports_str = []
         self.vmhost = None if not result[13] else Device(result[13])
+        self.backup = True if result[14] == 1 else False
         if self.connection == "wifi":
             for port in self.ports:
                 cur.execute("SELECT ssid FROM wifis WHERE id=%s", (port,))
