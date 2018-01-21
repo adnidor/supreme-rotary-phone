@@ -18,7 +18,8 @@ targets = {
            "contexts":      {"table":"contexts","column":"name", "where":"1", "convert":lambda x: x},
            "contextids":    {"table":"contexts","column":"i", "where":"1", "convert":lambda x: x},
            "identifiers":   {"table":"devices","column":"identifier", "where":"1", "convert":lambda x: x},
-           "devices":       {"table":"devices","column":"identifier", "where":"1" ,"convert":lambda x: helpers.Device(x).fqdn}
+           "devices":       {"table":"devices","column":"identifier", "where":"1" ,"convert":lambda x: helpers.Device(x).fqdn},
+           "backupdevices": {"table":"devices","column":"identifier", "where":"backup = 1" ,"convert":lambda x: helpers.Device(x).fqdn}
           }
 
 if len(sys.argv) != 2:
