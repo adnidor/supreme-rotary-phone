@@ -473,6 +473,36 @@ class AccessPoint(EqualityMixin, GetWhereMixin):
     def __repr__(self):
         return "<AccessPoint " + str(self.id) + ">"
 
+class Switch(EqualityMixin, GetWhereMixin):
+    """Get a Switch from the db
+
+    :param identifier int: The identifier of the switch
+    """
+
+    _table = "switches"
+    _id_col = "id"
+
+    def __init__(self, id):
+        self.id = int(id)
+        cur = db_connection.cursor()
+        sql = """SELECT
+                    device,
+                    nports,
+                    sat_oid
+                 FROM switches 
+                 WHERE
+                    id = %s
+              """
+        cur.execute(sql, (id,))
+        result = cur.fetchone()
+        if result is None:
+            raise KeyError("AP not found")
+        self.device = Device(result[0])
+        self.nports = result[1]
+        self.sat_oid = result[2]
+
+    def __repr__(self):
+        return "<Switch " + str(self.id) + ">"
 
 def get_secs_since_update():
     """Get seconds since the last update was done.
